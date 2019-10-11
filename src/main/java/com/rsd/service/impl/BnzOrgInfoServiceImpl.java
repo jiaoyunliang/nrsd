@@ -3,10 +3,10 @@ package com.rsd.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.rsd.domain.*;
-import com.rsd.mapper.BnzAccountMapper;
-import com.rsd.mapper.BnzOrgInfoMapper;
-import com.rsd.mapper.BnzOrgTypesMapper;
 import com.rsd.mapper.BnzProductTypeMapper;
+import com.rsd.mapper.RsdAccountMapper;
+import com.rsd.mapper.RsdOrgInfoMapper;
+import com.rsd.mapper.RsdOrgTypesMapper;
 import com.rsd.service.BnzOrgInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,28 +24,28 @@ import java.util.List;
 public class BnzOrgInfoServiceImpl implements BnzOrgInfoService {
 
     @Autowired
-    private BnzOrgInfoMapper bnzOrgInfoMapper;
+    private RsdOrgInfoMapper rsdOrgInfoMapper;
 
     @Autowired
-    private BnzOrgTypesMapper bnzOrgTypesMapper;
+    private RsdOrgTypesMapper rsdOrgTypesMapper;
 
     @Autowired
     private BnzProductTypeMapper bnzProductTypeMapper;
 
     @Autowired
-    private BnzAccountMapper bnzAccountMapper;
+    private RsdAccountMapper rsdAccountMapper;
 
 
     @Override
     public List<RsdOrgInfo> queryOrgList(RsdOrgInfo model) {
-        return bnzOrgInfoMapper.queryOrgList(model);
+        return rsdOrgInfoMapper.queryOrgList(model);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int saveOrg(RsdOrgInfoModel model) {
-        model.setId(bnzOrgInfoMapper.getId());
-        int tmp =bnzOrgInfoMapper.insertSelective(model);
+        model.setId(rsdOrgInfoMapper.getId());
+        int tmp = rsdOrgInfoMapper.insertSelective(model);
 
         //机构=企业
         if(model.getSysId()==3){
@@ -53,7 +53,7 @@ public class BnzOrgInfoServiceImpl implements BnzOrgInfoService {
                 RsdOrgTypes orgTypes = new RsdOrgTypes();
                 orgTypes.setOrgId(model.getId());
                 orgTypes.setTypeId(typeId);
-                bnzOrgTypesMapper.insert(orgTypes);
+                rsdOrgTypesMapper.insert(orgTypes);
             }
         }
         return tmp;
@@ -62,26 +62,26 @@ public class BnzOrgInfoServiceImpl implements BnzOrgInfoService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateOrg(RsdOrgInfoModel model) {
-        int tmp = bnzOrgInfoMapper.updateByPrimaryKeySelective(model);
+        int tmp = rsdOrgInfoMapper.updateByPrimaryKeySelective(model);
 
         //机构=企业
         if(model.getSysId()==3){
             RsdOrgTypes orgTypes = new RsdOrgTypes();
             orgTypes.setOrgId(model.getId());
-            bnzOrgTypesMapper.delete(orgTypes);
+            rsdOrgTypesMapper.delete(orgTypes);
 
             for(Long typeId : model.getOrgTypeIds()){
                 orgTypes = new RsdOrgTypes();
                 orgTypes.setOrgId(model.getId());
                 orgTypes.setTypeId(typeId);
-                bnzOrgTypesMapper.insert(orgTypes);
+                rsdOrgTypesMapper.insert(orgTypes);
             }
         }
 
         RsdAccount account = new RsdAccount();
         account.setOrgId(model.getId());
         account.setRoleId(model.getOrgLevel());
-        bnzAccountMapper.updateAccountRoleByOrgId(account);
+        rsdAccountMapper.updateAccountRoleByOrgId(account);
 
         return tmp;
     }
@@ -89,7 +89,7 @@ public class BnzOrgInfoServiceImpl implements BnzOrgInfoService {
     @Override
     public Page<List> queryOrgPage(RsdOrgInfoModel model) {
         Page<List> page = PageHelper.startPage(model.getPageInput().getCurrent(), model.getPageInput().getSize());
-        bnzOrgInfoMapper.queryOrgPage(model);
+        rsdOrgInfoMapper.queryOrgPage(model);
         return page;
     }
 
@@ -101,7 +101,7 @@ public class BnzOrgInfoServiceImpl implements BnzOrgInfoService {
     @Override
     public Page<List> queryEnterpriseList(RsdOrgInfoModel model) throws Exception {
         Page<List> page = PageHelper.startPage(model.getPageInput().getCurrent(), model.getPageInput().getSize());
-        bnzOrgInfoMapper.queryEnterpriseList(model);
+        rsdOrgInfoMapper.queryEnterpriseList(model);
         return page;
     }
 }

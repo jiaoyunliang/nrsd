@@ -4,9 +4,9 @@ import com.rsd.domain.RsdAccount;
 import com.rsd.domain.RsdAccountModel;
 import com.rsd.domain.RsdOrgInfo;
 import com.rsd.domain.RsdRole;
-import com.rsd.mapper.BnzAccountMapper;
-import com.rsd.mapper.BnzOrgInfoMapper;
-import com.rsd.mapper.BnzRoleMapper;
+import com.rsd.mapper.RsdAccountMapper;
+import com.rsd.mapper.RsdOrgInfoMapper;
+import com.rsd.mapper.RsdRoleMapper;
 import com.rsd.utils.Const;
 import com.rsd.utils.DateUtil;
 import org.apache.commons.logging.Log;
@@ -37,13 +37,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     protected final Log logger = LogFactory.getLog(this.getClass());
 
     @Autowired
-    private BnzAccountMapper bnzAccountMapper;
+    private RsdAccountMapper rsdAccountMapper;
 
     @Autowired
-    private BnzRoleMapper bnzRoleMapper;
+    private RsdRoleMapper rsdRoleMapper;
 
     @Autowired
-    private BnzOrgInfoMapper bnzOrgInfoMapper;
+    private RsdOrgInfoMapper rsdOrgInfoMapper;
 
 
     @Override
@@ -51,7 +51,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         RsdAccountModel param = new RsdAccountModel();
         param.setUserName(username);
         param.setSysId(Const.H_SYS_ID);
-        RsdAccount account = bnzAccountMapper.queryAccountByUserName(param);
+        RsdAccount account = rsdAccountMapper.queryAccountByUserName(param);
 
         if (account==null){
             logger.error("UserName " + username + " not found");
@@ -61,9 +61,9 @@ public class CustomUserDetailsService implements UserDetailsService {
             boolean enabled = true;
             boolean accountNonExpired = true;
 
-            RsdOrgInfo orgInfo = bnzOrgInfoMapper.selectByPrimaryKey(account.getOrgId());
+            RsdOrgInfo orgInfo = rsdOrgInfoMapper.selectByPrimaryKey(account.getOrgId());
 
-            RsdRole role = bnzRoleMapper.selectByPrimaryKey(account.getRoleId());
+            RsdRole role = rsdRoleMapper.selectByPrimaryKey(account.getRoleId());
 
             if(role==null || orgInfo==null){
                 logger.error("UserName " + username + " not found");

@@ -6,7 +6,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
 
-@Table(name = "BNZ_ORG_INFO")
+@Table(name = "RSD_ORG_INFO")
 public class RsdOrgInfo implements Serializable {
 
 

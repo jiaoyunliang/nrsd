@@ -7,7 +7,7 @@ import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
 
-public interface BnzOrgInfoMapper extends Mapper<RsdOrgInfo>,BaseMapper<RsdOrgInfo> {
+public interface RsdOrgInfoMapper extends Mapper<RsdOrgInfo>, BaseMapper<RsdOrgInfo> {
 
     List<RsdOrgInfo> queryOrgList(@Param("model") RsdOrgInfo model);
 

@@ -2,9 +2,9 @@ package com.rsd.securityConfig;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rsd.domain.*;
-import com.rsd.mapper.BnzAccountMapper;
-import com.rsd.mapper.BnzOrgInfoMapper;
-import com.rsd.mapper.BnzRoleMapper;
+import com.rsd.mapper.RsdAccountMapper;
+import com.rsd.mapper.RsdOrgInfoMapper;
+import com.rsd.mapper.RsdRoleMapper;
 import com.rsd.service.BnzSysNoticeService;
 import com.rsd.utils.Const;
 import com.rsd.utils.HttpSessionManager;
@@ -37,13 +37,13 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
 
 
     @Autowired
-    private BnzAccountMapper bnzAccountMapper;
+    private RsdAccountMapper rsdAccountMapper;
 
     @Autowired
-    private BnzRoleMapper bnzRoleMapper;
+    private RsdRoleMapper rsdRoleMapper;
 
     @Autowired
-    private BnzOrgInfoMapper bnzOrgInfoMapper;
+    private RsdOrgInfoMapper rsdOrgInfoMapper;
 
     @Autowired
     private BnzSysNoticeService bnzSysNoticeService;
@@ -66,15 +66,15 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
         param.setUserName(user.getUsername());
 
         //账户信息
-        RsdAccount account = bnzAccountMapper.queryAccountByUserName(param);
+        RsdAccount account = rsdAccountMapper.queryAccountByUserName(param);
         HttpSessionManager.put(Const.SESSION_ACCOUNT, account);
 
         //账户机构信息
-        RsdOrgInfo orgInfo = bnzOrgInfoMapper.selectByPrimaryKey(account.getOrgId());
+        RsdOrgInfo orgInfo = rsdOrgInfoMapper.selectByPrimaryKey(account.getOrgId());
         HttpSessionManager.put(Const.SESSION_ACCOUNT_ORG, orgInfo);
 
         //账户 角色
-        RsdRole role = bnzRoleMapper.selectByPrimaryKey(account.getRoleId());
+        RsdRole role = rsdRoleMapper.selectByPrimaryKey(account.getRoleId());
         HttpSessionManager.put(Const.SESSION_ACCOUNT_ROLE, role);
 
 
@@ -94,14 +94,14 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
         param.setIsService(1);
         param.setEnabledState(0);
 
-        List list = bnzAccountMapper.select(param);
+        List list = rsdAccountMapper.select(param);
 
         if(!list.isEmpty()){
             request.getSession().setAttribute(Const.SESSION_SERVICE_ACCOUNT,list.get(0));
         }
 
         //账户 资源
-        List<RsdRes> resList =  bnzAccountMapper.queryUserPermissionRoleByUserId(account.getId());
+        List<RsdRes> resList = rsdAccountMapper.queryUserPermissionRoleByUserId(account.getId());
         List<RsdRes> result = new ArrayList<>();
         for (RsdRes data0 : resList) {
             boolean mark = true;
@@ -133,7 +133,7 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
         updateAccount.setLoginCount((account.getLoginCount()==null?0:account.getLoginCount())+1);
         updateAccount.setLoginDate(new Date());
         updateAccount.setLoginIp(getIpAddress(request));
-        bnzAccountMapper.updateByPrimaryKeySelective(updateAccount);
+        rsdAccountMapper.updateByPrimaryKeySelective(updateAccount);
 
         String loginType = request.getHeader("Accept");
 

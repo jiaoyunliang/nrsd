@@ -1,7 +1,7 @@
 package com.rsd.securityConfig;
 
 import com.rsd.domain.RsdRes;
-import com.rsd.mapper.BnzResMapper;
+import com.rsd.mapper.RsdResMapper;
 import com.rsd.utils.CommonCacheManager;
 import com.rsd.utils.Const;
 import org.apache.commons.logging.Log;
@@ -28,7 +28,7 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
 
 
     @Autowired
-    private BnzResMapper bnzResMapper;
+    private RsdResMapper rsdResMapper;
 
 
     @Override
@@ -43,7 +43,7 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
         RsdRes param = new RsdRes();
         param.setSysId(Const.H_SYS_ID);
         param.setHospitalFlag(1);
-        List<RsdRes>  hlist = bnzResMapper.queryResList(param);
+        List<RsdRes> hlist = rsdResMapper.queryResList(param);
         for (RsdRes res: hlist){
             hResAllCode.add(res.getResCode());
         }
@@ -51,7 +51,7 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
         param = new RsdRes();
         param.setSysId(Const.E_SYS_ID);
         param.setOrgFlag(1);
-        List<RsdRes>  elist = bnzResMapper.queryResList(param);
+        List<RsdRes> elist = rsdResMapper.queryResList(param);
         for (RsdRes res: elist){
             eResAllCode.add(res.getResCode());
         }

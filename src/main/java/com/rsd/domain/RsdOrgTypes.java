@@ -4,7 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Table(name = "BNZ_ORG_TYPES")
+@Table(name = "RSD_ORG_TYPES")
 public class RsdOrgTypes {
     @Id
     @Column(name = "ORG_ID")

@@ -13,7 +13,7 @@
     <result column="CREATE_USER" property="createUser"/>
     <result column="CREATE_TIME" property="createTime"/>
     <association property="rsdOrgInfo" column="org_id" fetchType="eager"
-                 select="com.rsd.mapper.BnzOrgInfoMapper.get">
+                 select="com.rsd.mapper.RsdOrgInfoMapper.get">
     </association>
   </resultMap>
   <sql id="is_del">and is_del=0</sql>

@@ -3,7 +3,7 @@ package com.rsd.domain;
 import javax.persistence.Column;
 import javax.persistence.Table;
 
-@Table(name = "BNZ_ROLE_RES")
+@Table(name = "RSD_ROLE_RES")
 public class RsdRoleRes {
     @Column(name = "ROLE_ID")
     private Long roleId;

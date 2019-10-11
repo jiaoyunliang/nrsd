@@ -7,7 +7,7 @@ import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
 
-public interface BnzResMapper extends Mapper<RsdRes> {
+public interface RsdResMapper extends Mapper<RsdRes> {
 
     List<RsdRes> queryResList(@Param("model") RsdRes res);
 

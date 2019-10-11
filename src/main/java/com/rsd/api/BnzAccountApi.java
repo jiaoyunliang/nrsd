@@ -2,7 +2,6 @@ package com.rsd.api;
 
 import com.github.pagehelper.Page;
 import com.rsd.domain.Account;
-import com.rsd.domain.BnzAccountApply;
 import com.rsd.domain.RsdAccountModel;
 import com.rsd.service.BnzAccountApplyService;
 import com.rsd.service.BnzAccountService;
@@ -96,13 +95,14 @@ public class BnzAccountApi {
                     BeanUtils.copyProperties(account,target);
 
                     //申请企业 未读数
-                    BnzAccountApply accountApply = new BnzAccountApply();
-                    accountApply.setIsRead(0);
-                    int applyNonReadNum = bnzAccountApplyService.queryAccountApplyNonReadNum(accountApply);
-
+                    /**
+                     BnzAccountApply accountApply = new BnzAccountApply();
+                     accountApply.setIsRead(0);
+                     int applyNonReadNum = bnzAccountApplyService.queryAccountApplyNonReadNum(accountApply);
+                     */
                     map.put("user",target);
                     map.put("token", token);
-                    map.put("applyNonReadNum",applyNonReadNum);
+                    //map.put("applyNonReadNum",applyNonReadNum);
 
                     return new JsonOut().addMessage(messageManager.getMessage("ERROR.0001")).addDataName("data").addData(map).build();
                 } else {

@@ -2,7 +2,7 @@ package com.rsd.service.impl;
 
 import com.rsd.domain.RsdRes;
 import com.rsd.domain.RsdRoleModel;
-import com.rsd.mapper.BnzResMapper;
+import com.rsd.mapper.RsdResMapper;
 import com.rsd.service.BnzResService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,29 +24,29 @@ public class BnzResServiceImpl implements BnzResService {
     private static final Logger logger = LoggerFactory.getLogger(BnzResServiceImpl.class);
 
     @Autowired
-    private BnzResMapper bnzResMapper;
+    private RsdResMapper rsdResMapper;
 
     @Override
     public List<RsdRes> queryResListByRoleId(RsdRoleModel model) {
-        return bnzResMapper.queryResListByRoleId(model);
+        return rsdResMapper.queryResListByRoleId(model);
     }
 
     @Override
     public int saveRes(RsdRes res) {
-        res.setId(bnzResMapper.getId());
-        return bnzResMapper.insertSelective(res);
+        res.setId(rsdResMapper.getId());
+        return rsdResMapper.insertSelective(res);
     }
 
     @Override
     public int updateRes(RsdRes res) {
-        return bnzResMapper.updateByPrimaryKeySelective(res);
+        return rsdResMapper.updateByPrimaryKeySelective(res);
     }
 
     @Override
     public int deleteById(Long id) throws Exception {
         int flag = 0;
         try{
-            flag = bnzResMapper.deleteByPrimaryKey(id);
+            flag = rsdResMapper.deleteByPrimaryKey(id);
         }catch (Exception e){
             logger.error(e.getMessage());
             throw new RuntimeException(e);
@@ -58,7 +58,7 @@ public class BnzResServiceImpl implements BnzResService {
     @Override
     public List<RsdRes> queryResList(RsdRes res) {
         List<RsdRes> result = new ArrayList<>();
-        List<RsdRes> list = bnzResMapper.queryResList(res);
+        List<RsdRes> list = rsdResMapper.queryResList(res);
 
         for (RsdRes data0 : list) {
             boolean mark = true;

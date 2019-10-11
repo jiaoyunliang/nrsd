@@ -7,7 +7,7 @@ import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
 
-public interface BnzRoleMapper extends Mapper<RsdRole> {
+public interface RsdRoleMapper extends Mapper<RsdRole> {
 
 
     Long getId();

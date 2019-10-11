@@ -8,7 +8,7 @@ import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
 
-public interface BnzAccountMapper extends Mapper<RsdAccount> {
+public interface RsdAccountMapper extends Mapper<RsdAccount> {
 
 
     RsdAccountModel queryAccountByUserName(@Param("model") RsdAccountModel model);

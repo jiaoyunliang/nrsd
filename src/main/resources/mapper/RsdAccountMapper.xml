@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rsd.mapper.BnzAccountMapper">
+<mapper namespace="com.rsd.mapper.RsdAccountMapper">
   <resultMap id="BaseResultMap" type="com.rsd.domain.RsdAccount">
     <!--
       WARNING - @mbg.generated
@@ -37,9 +37,9 @@
         d.DICT_NAME AS sys_name,
         o.ORG_NAME
     FROM
-        BNZ_ACCOUNT a,
-        BNZ_DICT_INFO d,
-        BNZ_ORG_INFO o
+      RSD_ACCOUNT a,
+      RSD_DICT_INFO d,
+      RSD_ORG_INFO o
     WHERE
         a.SYS_ID = d.DICT_ID
         AND d.DICT_CATEGORY_ID = 1

@@ -6,9 +6,9 @@ import com.rsd.domain.RsdAccountModel;
 import com.rsd.domain.RsdOrgInfo;
 import com.rsd.domain.RsdRes;
 import com.rsd.domain.RsdRole;
-import com.rsd.mapper.BnzAccountMapper;
-import com.rsd.mapper.BnzOrgInfoMapper;
-import com.rsd.mapper.BnzRoleMapper;
+import com.rsd.mapper.RsdAccountMapper;
+import com.rsd.mapper.RsdOrgInfoMapper;
+import com.rsd.mapper.RsdRoleMapper;
 import com.rsd.service.BnzAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,23 +31,23 @@ public class BnzAccountServiceImpl implements BnzAccountService {
     private static final Logger logger = LoggerFactory.getLogger(BnzAccountServiceImpl.class);
 
     @Autowired
-    private BnzAccountMapper bnzAccountMapper;
+    private RsdAccountMapper rsdAccountMapper;
 
     @Autowired
-    private BnzRoleMapper bnzRoleMapper;
+    private RsdRoleMapper rsdRoleMapper;
 
     @Autowired
-    private BnzOrgInfoMapper bnzOrgInfoMapper;
+    private RsdOrgInfoMapper rsdOrgInfoMapper;
 
     @Override
     public RsdAccountModel queryAccountByUserName(RsdAccountModel account) {
 
-        RsdAccountModel accountModel = bnzAccountMapper.queryAccountByUserName(account);
+        RsdAccountModel accountModel = rsdAccountMapper.queryAccountByUserName(account);
 
         if(null!=accountModel){
-            RsdRole role = bnzRoleMapper.selectByPrimaryKey(accountModel.getRoleId());
+            RsdRole role = rsdRoleMapper.selectByPrimaryKey(accountModel.getRoleId());
             accountModel.setRole(role);
-            RsdOrgInfo orgInfo = bnzOrgInfoMapper.selectByPrimaryKey(accountModel.getOrgId());
+            RsdOrgInfo orgInfo = rsdOrgInfoMapper.selectByPrimaryKey(accountModel.getOrgId());
             accountModel.setOrgInfo(orgInfo);
         }
         return accountModel;
@@ -58,7 +58,7 @@ public class BnzAccountServiceImpl implements BnzAccountService {
 
         Page<List> page = PageHelper.startPage(model.getPageInput().getCurrent(), model.getPageInput().getSize());
 
-        bnzAccountMapper.queryAccountList(model);
+        rsdAccountMapper.queryAccountList(model);
 
         return page;
     }
@@ -67,8 +67,8 @@ public class BnzAccountServiceImpl implements BnzAccountService {
     @Override
     public int saveAccount(RsdAccountModel model) throws Exception{
         try{
-            model.setId(bnzAccountMapper.getId());
-            return bnzAccountMapper.insertSelective(model);
+            model.setId(rsdAccountMapper.getId());
+            return rsdAccountMapper.insertSelective(model);
         }catch (Exception e){
             logger.error(e.getMessage());
             throw new RuntimeException(e);
@@ -80,17 +80,17 @@ public class BnzAccountServiceImpl implements BnzAccountService {
     @Transactional(rollbackFor = Exception.class)
     public int updateAccount(RsdAccountModel model) {
         if(model.getSysId()!=null && model.getSysId()==1 && model.getEnabledState()!=null && model.getEnabledState()==1 ){
-            bnzAccountMapper.updateAccountIsService();
+            rsdAccountMapper.updateAccountIsService();
         } else if(model.getSysId()!=null && model.getSysId()==1 && model.getIsService()!=null && model.getIsService()==1){
-            bnzAccountMapper.updateAccountIsService();
+            rsdAccountMapper.updateAccountIsService();
         }
-        return bnzAccountMapper.updateByPrimaryKeySelective(model);
+        return rsdAccountMapper.updateByPrimaryKeySelective(model);
     }
 
     @Override
     public List<RsdRes> queryUserPermissionRoleByUserId(Long userId) {
         List<RsdRes> result = new ArrayList<>();
-        List<RsdRes>  list = bnzAccountMapper.queryUserPermissionRoleByUserId(userId);
+        List<RsdRes> list = rsdAccountMapper.queryUserPermissionRoleByUserId(userId);
 
         for (RsdRes data0 : list) {
             boolean mark = true;

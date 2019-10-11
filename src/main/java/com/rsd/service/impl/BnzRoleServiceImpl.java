@@ -5,8 +5,8 @@ import com.github.pagehelper.PageHelper;
 import com.rsd.domain.RsdRole;
 import com.rsd.domain.RsdRoleModel;
 import com.rsd.domain.RsdRoleRes;
-import com.rsd.mapper.BnzRoleMapper;
-import com.rsd.mapper.BnzRoleResMapper;
+import com.rsd.mapper.RsdRoleMapper;
+import com.rsd.mapper.RsdRoleResMapper;
 import com.rsd.service.BnzRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,24 +24,24 @@ import java.util.List;
 public class BnzRoleServiceImpl implements BnzRoleService {
 
     @Autowired
-    private BnzRoleMapper bnzRoleMapper;
+    private RsdRoleMapper rsdRoleMapper;
 
     @Autowired
-    private BnzRoleResMapper bnzRoleResMapper;
+    private RsdRoleResMapper rsdRoleResMapper;
 
     @Override
     public Page<List> queryRoleList(RsdRoleModel role) {
 
         Page<List> page = PageHelper.startPage(role.getPageInput().getCurrent(), role.getPageInput().getSize());
 
-        bnzRoleMapper.queryRoleList(role);
+        rsdRoleMapper.queryRoleList(role);
         return page;
     }
 
 
     @Override
     public List<RsdRoleModel> queryRoleListBySysId(RsdRoleModel role) {
-        return bnzRoleMapper.queryRoleList(role);
+        return rsdRoleMapper.queryRoleList(role);
     }
 
     @Override
@@ -52,25 +52,25 @@ public class BnzRoleServiceImpl implements BnzRoleService {
 
             RsdRoleRes rr = new RsdRoleRes();
             rr.setRoleId(role.getId());
-            bnzRoleResMapper.delete(rr);
+            rsdRoleResMapper.delete(rr);
 
             for(Long resId : role.getResIds()){
                 rr = new RsdRoleRes();
                 rr.setRoleId(role.getId());
                 rr.setResId(resId);
-                bnzRoleResMapper.insert(rr);
+                rsdRoleResMapper.insert(rr);
             }
 
-            return bnzRoleMapper.updateByPrimaryKeySelective(role);
+            return rsdRoleMapper.updateByPrimaryKeySelective(role);
         } else {
-            role.setId(bnzRoleMapper.getId());
-            int tmp = bnzRoleMapper.insertSelective(role);
+            role.setId(rsdRoleMapper.getId());
+            int tmp = rsdRoleMapper.insertSelective(role);
 
             for(Long resId : role.getResIds()){
                 RsdRoleRes rr = new RsdRoleRes();
                 rr.setRoleId(role.getId());
                 rr.setResId(resId);
-                bnzRoleResMapper.insert(rr);
+                rsdRoleResMapper.insert(rr);
             }
 
             return tmp;
@@ -79,6 +79,6 @@ public class BnzRoleServiceImpl implements BnzRoleService {
 
     @Override
     public int updateRole(RsdRole role) {
-        return bnzRoleMapper.updateByPrimaryKeySelective(role);
+        return rsdRoleMapper.updateByPrimaryKeySelective(role);
     }
 }
