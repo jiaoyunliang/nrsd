@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head th:include="/hospital/fragments/common :: #common"></head>
+<body>
+<div id="app" class="hsptAll">
+  <div th:replace="/hospital/global :: #header"></div>
+  <div th:replace="/hospital/global :: #navbar"></div>
+  <div class="center">
+    <template>
+      <div class="list_a">数据查询</div>
+      <div>
+        <div>
+          <el-row style="margin-bottom: 10px;margin-top: 10px">
+            <el-col :span="6">
+              项目名称：
+              <el-input
+                v-model="searchParams.projectName"
+                style="width:200px"
+                placeholder="请输入项目名称"
+              ></el-input>
+            </el-col>
+            <el-col :span="6">
+              <el-button type="primary" @click="handleSearchData">查询</el-button>
+            </el-col>
+          </el-row>
+        </div>
+        <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
+          <el-tab-pane
+            label="本院项目"
+            name="hospitalProject">
+          </el-tab-pane>
+          <el-tab-pane
+            label="全网公开项目"
+            name="allProject"
+          >
+          </el-tab-pane>
+          <div>
+            <el-row>
+              <el-col :span="24" class="list_w">
+                <el-table
+                  :data="dataList"
+                  style="width: 100%"
+                  stripe
+                  v-loading="loading"
+                >
+                  <el-table-column
+                    type="index"
+                    :index="typeIndex"
+                    label="序号"
+                    width="50"
+                  ></el-table-column>
+                  <el-table-column
+                    prop="rsdOrgInfo.orgName"
+                    label="医院"
+                    v-if="searchParams.projectType==1"
+                  >
+                  </el-table-column>
+                  <el-table-column
+                    prop="projectName"
+                    label="项目名称 "
+                  ></el-table-column>
+                  <el-table-column label="项目时间" prop="projectTime" :formatter="dateFormat">
+
+                  </el-table-column>
+                  <el-table-column label="操作" width="150">
+                    <template slot-scope="scope">
+                      <el-button
+                        type="primary"
+                        icon="el-icon-search"
+                        @click="handleSearchBidDetailDetail(scope.row)"
+                      ></el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col>
+                <el-pagination
+                  v-bind:current-page="pageInfo.current"
+                  v-bind:page-size="pageInfo.size"
+                  :total="pageInfo.total"
+                  layout="total,sizes,prev,pager,next,jumper"
+                  v-bind:page-sizes="[10, 50, 100]"
+                  v-on:size-change="changePageSize"
+                  v-on:current-change="pageIndexChange">
+                </el-pagination>
+              </el-col>
+            </el-row>
+          </div>
+        </el-tabs>
+      </div>
+    </template>
+  </div>
+  <div th:replace="/hospital/fragments/footer :: #footer">&copy; 2017 The Static Templates</div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/lib/vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/lib/element-ui/lib/index.js}"></script>
+<script type="text/javascript" th:src="@{/lib/vue/vuex.js}"></script>
+<script type="text/javascript" th:src="@{/lib/moment/moment.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/axios/dist/axios.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
+<script type="text/javascript" th:src="@{/hospital/js/project/maintab.js}"></script>
+</html>
+
+

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzSysNoticeMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzSysNotice">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="SYS_ID" jdbcType="DECIMAL" property="sysId" />
+    <result column="TITLE" jdbcType="VARCHAR" property="title" />
+    <result column="TYPE" jdbcType="DECIMAL" property="type" />
+    <result column="ORG_ID" jdbcType="DECIMAL" property="orgId" />
+    <result column="IS_RED" jdbcType="DECIMAL" property="isRed" />
+    <result column="IS_TOP" jdbcType="DECIMAL" property="isTop" />
+    <result column="IS_NEW" jdbcType="DECIMAL" property="isNew" />
+    <result column="IS_DEL" jdbcType="DECIMAL" property="isDel" />
+    <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser" />
+    <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime" />
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+    <result column="CREATE_TIME" jdbcType="DATE" property="createTime" />
+    <result column="CONTENT" jdbcType="CLOB" property="content" />
+  </resultMap>
+
+  <select id="getId" resultType="Long">
+    select BNZ_SYS_NOTICE_SEQ.nextval from dual
+  </select>
+
+  <select id="querySysNoticeList" resultType="com.rsd.domain.BnzSysNoticeModel">
+      SELECT
+        t.*,
+        t1.org_name
+      FROM
+        BNZ_SYS_NOTICE t
+      LEFT JOIN BNZ_ORG_INFO t1 ON t.org_id = t1.id
+      WHERE t.IS_DEL = 0
+        AND t.SYS_ID = #{model.sysId}
+        AND t.TYPE = #{model.type}
+      <if test="model.title != null and model.title != ''" >
+        AND t.TITLE LIKE '%'||#{model.title}||'%'
+      </if>
+    ORDER BY
+        t.CREATE_TIME DESC
+  </select>
+
+
+  <select id="queryOrgReadNoticeList" resultType="com.rsd.domain.BnzSysNoticeModel">
+    SELECT
+        *
+    FROM
+        (
+        SELECT
+            t.*,
+            r.account_id
+        FROM
+            BNZ_SYS_NOTICE t
+            LEFT JOIN ( SELECT * FROM BNZ_NOTICE_READ WHERE ORG_ID = #{model.orgId} ) r ON t.id = r.NOTICE_ID
+        WHERE
+            t.SYS_ID = #{model.sysId} and t.IS_DEL = 0 and (t.org_id=#{model.orgId} or t.org_id is null)
+        ) x where 1=1
+    <choose>
+      <when test="model.accountId != null and model.accountId==0">
+        and x.account_id IS NULL
+      </when>
+      <when test="model.accountId != null and model.accountId==1">
+        and x.account_id IS not NULL
+      </when>
+    </choose>
+    ORDER BY
+        x.CREATE_TIME DESC
+  </select>
+
+
+  <select id="queryNoticeUnreadNum" resultType="Integer">
+    SELECT
+        count(1)
+    FROM
+        (
+        SELECT
+            t.*,
+            r.account_id
+        FROM
+            BNZ_SYS_NOTICE t
+            LEFT JOIN ( SELECT * FROM BNZ_NOTICE_READ WHERE ORG_ID = #{model.orgId} ) r ON t.id = r.NOTICE_ID
+        WHERE
+            t.SYS_ID = #{model.sysId} and t.IS_DEL = 0 and (t.org_id=#{model.orgId} or t.org_id is null)
+        ) x where x.account_id IS NULL
+  </select>
+</mapper>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head th:include="/hospital/fragments/common :: #common"></head>
+<body>
+<div class="hsptAll">
+  <div th:replace="/hospital/global :: #header"></div>
+  <div th:replace="/hospital/global :: #navbar"></div>
+  <div class="center">
+    <div class="list_a">
+      <a th:href="@{/hospital/index}"> 首页 </a>&gt;
+      <a th:href="@{/hospital/qua/list?c=001005}">院内资质</a>
+    </div>
+    <div class="list_b">
+      <div id="app">
+        <template>
+          <el-row class="list_w">
+            <el-col>
+              <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
+                <el-tab-pane
+                  label="企业资质"
+                  name="hospitalQuaList">
+                  <hospital-qua-list-component :is-view="activeName"></hospital-qua-list-component>
+                </el-tab-pane>
+                <el-tab-pane
+                  label="产品资质"
+                  name="productQuaLists"
+                >
+                  <product-qua-list-component :is-view="activeName"></product-qua-list-component>
+                </el-tab-pane>
+              </el-tabs>
+            </el-col>
+          </el-row>
+        </template>
+      </div>
+    </div>
+  </div>
+  <div th:replace="/hospital/fragments/footer :: #footer">&copy; 2017 The Static Templates</div>
+</div>
+
+<!--企业资质列表-->
+<script type="x-template" id="hospital-qua-list-template">
+  <div>
+    <el-button type="primary" @click="handleAddHospitalQua">添加企业资质</el-button>
+    <el-row>
+      <el-col :span="24" class="list_w">
+        <el-table
+          :data="dataList"
+          stripe
+          v-loading="loading"
+        >
+          <el-table-column
+            type="index"
+            :index="typeIndex"
+            label="序号"
+            width="50"
+          ></el-table-column>
+          <el-table-column
+            prop="quaName"
+            label="资质类型"
+          >
+          </el-table-column>
+          <el-table-column
+            prop="sum"
+            label="资质数量"
+          ></el-table-column>
+          </el-table-column>
+          <el-table-column label="操作" width="150">
+            <template slot-scope="scope">
+              <el-button
+                type="primary"
+                icon="el-icon-search"
+                @click="handleSearchHospitalDetailQua(scope.row)"
+              ></el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col>
+        <el-pagination
+          v-bind:current-page="pageInfo.current"
+          v-bind:page-size="pageInfo.size"
+          :total="pageInfo.total"
+          layout="total,sizes,prev,pager,next,jumper"
+          v-bind:page-sizes="[10, 50, 100]"
+          v-on:size-change="changePageSize"
+          v-on:current-change="pageIndexChange">
+        </el-pagination>
+      </el-col>
+    </el-row>
+    <add-hospital-qua-component :dialog-title="dialogTitle"
+                                :show-dialog.sync="showDialog"
+                                :refresh-list="onRefreshList">
+    </add-hospital-qua-component>
+    </el-row>
+  </div>
+</script>
+
+
+<!--产品资质列表-->
+<script type="x-template" id="product-qua-list-template">
+  <div>
+    <el-button type="primary" @click="handelAddProductQua">添加产品资质</el-button>
+    <el-row>
+      <el-col :span="24" class="list_w">
+        <el-table
+          :data="dataList"
+          stripe
+          v-loading="loading"
+        >
+          <el-table-column
+            type="index"
+            :index="typeIndex"
+            label="序号"
+            width="50"
+          ></el-table-column>
+          <el-table-column
+            prop="quaName"
+            label="资质类型"
+          >
+          </el-table-column>
+          <el-table-column
+            prop="sum"
+            label="资质数量"
+          ></el-table-column>
+          </el-table-column>
+          <el-table-column label="操作" width="150">
+            <template slot-scope="scope">
+              <el-button
+                type="primary"
+                icon="el-icon-search"
+                @click="handleSearchProductQuaDetail(scope.row)"
+              ></el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col>
+        <el-pagination
+          v-bind:current-page="pageInfo.current"
+          v-bind:page-size="pageInfo.size"
+          :total="pageInfo.total"
+          layout="total,sizes,prev,pager,next,jumper"
+          v-bind:page-sizes="[10, 50, 100]"
+          v-on:size-change="changePageSize"
+          v-on:current-change="pageIndexChange">
+        </el-pagination>
+      </el-col>
+    </el-row>
+    <add-product-qua-component :dialog-title="dialogTitle"
+                               :show-dialog.sync="showDialog"
+                               :refresh-list="onRefreshList">
+    </add-product-qua-component>
+    </el-row>
+  </div>
+</script>
+<!--添加企业资质-->
+<script type="x-template" id="add-hospital-qua-template">
+  <div>
+    <el-dialog
+      :title="dialogTitle"
+      :close-on-click-modal="false"
+      :visible="showDialog"
+      @close="tallDataListChanged"
+    >
+      <el-form
+        :model="currentData"
+        :rules="rules"
+        ref="formObject"
+        label-position="left"
+        label-width="80px"
+      >
+        <el-form-item label="资质类型" prop="quaType">
+          <el-select v-model="currentData.quaType" style="width:240px">
+            <el-option
+              v-for="item in dictInfoGroupOptions"
+              :key="item.id"
+              :label="item.dictName"
+              :value="item.dictId"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="企业名称" prop="orgName">
+          <el-input
+            v-model="currentData.orgName"
+            style="width:240px"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="资质名称" prop="quaName">
+          <el-input
+            v-model="currentData.quaName"
+            style="width:240px"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="有效期" prop="validityDate">
+          <el-date-picker
+            v-model="currentData.validityDate"
+            type="date"
+            placeholder="请选择项目时间"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="上传">
+          <el-upload
+            class="upload-demo"
+            ref="elUpload"
+            accept="image/jpeg,image/gif,image/png"
+            :multiple="false"
+            :before-upload="handleBeforeUpload"
+            :on-exceed="handleExceed"
+            :on-preview="handlePreview"
+            :before-remove="beforeRemove"
+            :on-remove="afterRemove"
+            :on-success="handleSuccess"
+            :action="handelUploadUrl()"
+            :file-list="imgs"
+            list-type="picture"
+            :limit="5"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">
+              只能上传jpg/png/jpeg，且不超过5M
+            </div>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handelSaveHospitalQua">保存</el-button>
+        <el-button @click="tallDataListChanged">关闭</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</script>
+
+<!--添加企业产品资质-->
+<script type="x-template" id="add-product-qua-template">
+  <div>
+    <el-dialog
+      width="40%"
+      :title="dialogTitle"
+      :close-on-click-modal="false"
+      :visible="showDialog"
+      @close="tallDataListChanged"
+    >
+      <el-form label-width="120px" ref="dynamicValidateForm" :model="currentData">
+        <el-form-item label="资质类型" prop="quaCode" :rules="{ required: true, message: '请选择资质类型', trigger: 'change' }">
+          <el-select v-model="currentData.quaCode" @change="selectproductqua" style="width:240px" placeholder="请选择">
+            <el-option
+              v-for="item in dictInfoGroupOptions"
+              :key="item.id"
+              :label="item.dictName"
+              :value="item.dictId"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="企业名称" prop="orgName" :rules="{required:true,message:'请输入企业名称',trigger:'blur'}">
+          <el-input
+            v-model="currentData.orgName"
+            style="width:240px"
+            placeholder="请输入"
+          ></el-input>
+        </el-form-item>
+        <el-form-item :key="domain.prop"
+                      :label="domain.label"
+                      :prop="domain.prop"
+                      :rules="{required: true, message: domain.label+'不能为空', trigger: 'blur'}"
+                      v-for="domain in dynamicValidateForm.domains">
+          <div v-if="(domain.type=='text')">
+            <el-input type="text" style="width:240px"
+                      autocomplete="off"
+                      v-model="currentData[domain.prop]"/>
+          </div>
+          <div>
+            <el-date-picker
+              v-model="currentData[domain.prop]" style="width:240px"
+              type="date"
+              v-if="(domain.type=='date')"
+            >
+            </el-date-picker>
+          </div>
+        </el-form-item>
+        <el-form-item label="上传">
+          <el-upload
+            class="upload-demo"
+            ref="elUpload"
+            accept="image/jpeg,image/gif,image/png"
+            :multiple="false"
+            :before-upload="handleBeforeUpload"
+            :on-exceed="handleExceed"
+            :on-preview="handlePreview"
+            :before-remove="beforeRemove"
+            :on-remove="afterRemove"
+            :on-success="handleSuccess"
+            :action="handelUploadUrl()"
+            :file-list="imgs"
+            list-type="picture"
+            :limit="5"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">
+              只能上传jpg/png/jpeg，且不超过5M
+            </div>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleSaveProductQua">保存</el-button>
+        <el-button @click="tallDataListChanged">关闭</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</script>
+<script type="text/javascript" th:src="@{/lib/vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/lib/element-ui/lib/index.js}"></script>
+<script type="text/javascript" th:src="@{/lib/vue/vuex.js}"></script>
+<script type="text/javascript" th:src="@{/lib/moment/moment.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/axios/dist/axios.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
+<script type="text/javascript" th:src="@{/hospital/js/qua/hospitallist.js}"></script>
+<script type="text/javascript" th:src="@{/hospital/js/qua/productlist.js}"></script>
+<script type="text/javascript" th:src="@{/hospital/js/qua/addhospitalqua.js}"></script>
+<script type="text/javascript" th:src="@{/hospital/js/qua/addproductqua.js}"></script>
+<script type="text/javascript" th:src="@{/hospital/js/qua/maintab.js}"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org"
+>
+
+<head th:include="/hospital/fragments/common :: #common"></head>
+<body>
+<div id="productapp" class="hsptAll">
+  <div th:replace="/hospital/global :: #header"></div>
+  <div th:replace="/hospital/global :: #navbar"></div>
+  <input type="hidden" ref="quaCodeInput" th:value="${quaCode}">
+  <input type="hidden" ref="orgInfoIdInput" th:value="${orgInfoId}">
+  <input type="hidden" ref="urlInput" th:value="${serverUrl}">
+  <div class="center">
+    <template>
+      <div class="list_a" th:text="${quaName}"></div>
+      <div style="padding-top:15px">
+        <br>
+        <div>
+          <el-row>
+            <el-col :span="24">
+              <el-table
+                :data="this.tableData"
+                height="400px"
+                max-height="400px"
+                size="small"
+                style="width: 100%"
+                row-class-name="row"
+                cell-class-name="column"
+                :highlight-current-row="true"
+                fit
+              >
+                <el-table-column
+                  type="index"
+                  :index="typeIndex"
+                  label="序号"
+                  width="50"
+                ></el-table-column>
+                <el-table-column prop="orgName" width="100" label="企业名称"></el-table-column>
+                <el-table-column
+                  v-for="(item, index) in tableLabel"
+                  :key="index"
+                  :formatter="dateFormat"
+                  :prop="item.prop"
+                  :width="item.width"
+                  :label="item.label"
+                >
+                </el-table-column>
+                <el-table-column label="操作" width="250">
+                  <template slot-scope="scope">
+                    <el-button
+                      type="primary"
+                      icon="el-icon-search"
+                      @click="handleSearchQuaImage(scope.row)"
+                    ></el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <el-pagination
+                v-bind:current-page="pageInfo.current"
+                v-bind:page-size="pageInfo.size"
+                :total="pageInfo.total"
+                layout="total,sizes,prev,pager,next,jumper"
+                v-bind:page-sizes="[10, 50, 100]"
+                v-on:size-change="changePageSize"
+                v-on:current-change="pageIndexChange"
+              ></el-pagination>
+            </el-col>
+          </el-row>
+        </div>
+
+
+        <div class="content">
+          <el-dialog
+            :center="true"
+            :title="imageDialogTitle"
+            :close-on-click-modal="false"
+            :modal="false"
+            :visible="isShowDialog"
+            @close="tallDataListChanged"
+          >
+            <div class="content">
+              <viewer :images="imgs">
+                <el-row>
+                  <img
+                    width="200px"
+                    height="200px"
+                    v-for="src in imgs"
+                    :src="src.url"
+                    :key="src.title"
+                  />
+                </el-row>
+              </viewer>
+            </div>
+          </el-dialog>
+        </div>
+      </div>
+    </template>
+  </div>
+</div>
+<div th:replace="/hospital/fragments/footer :: #footer">&copy; 2017 The Static Templates</div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/lib/vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/lib/element-ui/lib/index.js}"></script>
+<script type="text/javascript" th:src="@{/lib/vue/vuex.js}"></script>
+<script type="text/javascript" th:src="@{/lib/viewer/viewer.js}"></script>
+<script type="text/javascript" th:src="@{/lib/viewer/v-viewer.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/moment/moment.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/axios/dist/axios.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
+<script type="text/javascript" th:src="@{/hospital/js/qua/allproductquadetail.js}"></script>
+</html>
+

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/hospital/global :: #common"></head>
+<body>
+<div class="hsptAll">
+    <div th:replace="/hospital/global :: #header"></div>
+</div>
+<div th:replace="/hospital/global :: #navbar"></div>
+<div class="center">
+    <div class="list_a" >修改密码</div>
+    <div class="list_c">
+        <table>
+            <tbody><tr>
+                <td><div class="array_left">原密码：</div></td>
+                <td><input type="password" id="passwd" class="dftext"></td>
+            </tr>
+            <tr>
+                <td><div class="array_left">新密码：</div></td>
+                <td><input type="password" id="newPasswd" class="dftext"></td>
+            </tr>
+            <tr>
+                <td><div class="array_left">确认新密码：</div></td>
+                <td><input type="password" id="repeatPasswd" class="dftext"></td>
+            </tr>
+
+            </tbody>
+        </table>
+        <div class="list_c_2">
+            <button type="button" class="set" onclick="changePasswd()">保存</button>
+            <button type="button" onclick="window.history.go(-1)">返回</button>
+        </div>
+    </div>
+</div>
+<div th:replace="/hospital/global :: #footer"></div>
+
+
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function(){
+
+
+
+    });
+    
+    
+    function changePasswd() {
+        if($('#passwd').val()==''){
+            return
+        }
+
+        if($('#newPasswd').val()==''){
+            return
+        }
+        if($('#repeatPasswd').val()==''){
+            return
+        }
+        var param = {
+            passwd:$('#passwd').val(),
+            newPasswd:$('#newPasswd').val(),
+            repeatPasswd:$('#repeatPasswd').val()
+        }
+        $.ajax({
+            url: [[@{/hospital/account/doChangePasswd}]],
+            contentType: "application/json;charset=utf-8",
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify(param),
+            success: function(data){
+                if(data.result==200){
+                    alert('修改密码成功，请重新登录！');
+                    hLogout();
+                } else {
+                    alert(data.exceptionMsg);
+                }
+            }
+        });
+    }
+    /*]]>*/
+</script>
+
+
+<style>
+
+</style>
+</body>
+</html>

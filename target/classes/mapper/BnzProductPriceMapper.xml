@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzProductPriceMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzProductPrice">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="PRODUCT_ID" jdbcType="DECIMAL" property="productId" />
+    <result column="SPEC" jdbcType="VARCHAR" property="spec" />
+    <result column="PRICE" jdbcType="VARCHAR" property="price" />
+    <result column="AMOUNT" jdbcType="VARCHAR" property="amount" />
+  </resultMap>
+
+
+
+  <select id="getId" resultType="Long">
+    select BNZ_PRODUCT_PRICE_SEQ.nextval from dual
+   </select>
+</mapper>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzQuaExtItemMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzQuaExtItem">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="QUA_CODE" jdbcType="DECIMAL" property="quaCode" />
+    <result column="EXT_CODE" jdbcType="VARCHAR" property="extCode" />
+    <result column="EXT_NAME" jdbcType="VARCHAR" property="extName" />
+    <result column="IS_MUST" jdbcType="CHAR" property="isMust" />
+    <result column="ORDER_ID" jdbcType="DECIMAL" property="orderId" />
+    <result column="EXT_TYPE" jdbcType="DECIMAL" property="extType"/>
+    <result column="QUA_TYPE" jdbcType="DECIMAL" property="quaType" />
+    <result column="IS_DEL" jdbcType="DECIMAL" property="isDel" />
+    <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser" />
+    <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime" />
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+    <result column="CREATE_TIME" jdbcType="DATE" property="createTime" />
+  </resultMap>
+
+
+  <select id="findQuaExtItemListByRecordNotNull" resultType="com.rsd.domain.BnzQuaExtItem"
+          parameterType="com.rsd.domain.BnzQuaExtItem">
+    select * from BNZ_QUA_EXT_ITEM
+    <where>
+      <if test="model.id != null">
+        and ID = #{model.id}
+      </if>
+      <if test="model.quaCode != null">
+        and QUA_CODE = #{model.quaCode,jdbcType=VARCHAR}
+      </if>
+      <if test="model.quaName != null">
+        and QUA_NAME = #{model.quaName,jdbcType=VARCHAR}
+      </if>
+      <if test="model.extName != null">
+        and EXT_NAME = #{model.extName,jdbcType=VARCHAR}
+      </if>
+      <if test="model.extValue != null">
+        and EXT_VALUE = #{model.extValue,jdbcType=VARCHAR}
+      </if>
+      <if test="model.extCode != null">
+        and EXT_CODE = #{model.extCode,jdbcType=VARCHAR}
+      </if>
+      <if test="model.isMust != null">
+        and IS_MUST = #{model.isMust},
+      </if>
+      <if test="model.orderId != null">
+        and ORDER_ID = #{model.orderId}
+      </if>
+      <if test="model.extType != null">
+        and EXT_TYPE = #{model.extType}
+      </if>
+      <if test="model.quaType != null">
+        and QUA_TYPE = #{model.quaType}
+      </if>
+      <if test="model.proType != null">
+        and PRO_TYPE = #{model.proType}
+      </if>
+    </where>
+  </select>
+
+  <!-- 产品资质 扩展 -->
+  <select id="findQuaExtItemListByQuaCode" resultType="com.rsd.domain.BnzQuaExtItem"
+          parameterType="com.rsd.domain.BnzQuaExtItem">
+    select *
+    from BNZ_QUA_EXT_ITEM t
+    where t.qua_code = #{model.quaCode}
+      and t.qua_type = 3
+    order by t.order_id
+  </select>
+
+  <!-- 资质扩展 -->
+  <select id="findQuaExtItemListByQuaType" resultType="com.rsd.domain.BnzQuaExtItem"
+          parameterType="com.rsd.domain.BnzQuaExtItem">
+    SELECT *
+    FROM BNZ_QUA_EXT_ITEM
+    WHERE qua_type = #{model.quaType} AND qua_code = #{model.quaCode} AND is_del = 0
+    ORDER BY order_id
+  </select>
+</mapper>

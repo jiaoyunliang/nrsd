@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.RsdAccountMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.RsdAccount">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="USER_NAME" jdbcType="VARCHAR" property="userName" />
+    <result column="PASSWORD" jdbcType="VARCHAR" property="password" />
+    <result column="ENABLED_STATE" jdbcType="DECIMAL" property="enabledState" />
+    <result column="LOGIN_DATE" jdbcType="DATE" property="loginDate" />
+    <result column="LOGIN_IP" jdbcType="VARCHAR" property="loginIp" />
+    <result column="LOGIN_COUNT" jdbcType="DECIMAL" property="loginCount" />
+    <result column="NICKNAME" jdbcType="VARCHAR" property="nickname" />
+    <result column="MEMBER_ID" jdbcType="DECIMAL" property="memberId" />
+    <result column="ACCOUNT_ID" jdbcType="DECIMAL" property="accountId" />
+    <result column="DEVICE_ID" jdbcType="VARCHAR" property="deviceId" />
+    <result column="TOKEN_ID" jdbcType="VARCHAR" property="tokenId" />
+    <result column="CHANNEL_ID" jdbcType="VARCHAR" property="channelId" />
+    <result column="MOBILE_TYPE" jdbcType="VARCHAR" property="mobileType" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="ROLE_ID" jdbcType="DECIMAL" property="roleId" />
+    <result column="SYS_ID" jdbcType="DECIMAL" property="sysId" />
+    <result column="ORG_ID" jdbcType="DECIMAL" property="orgId" />
+    <result column="EMAIL" jdbcType="VARCHAR" property="email" />
+    <result column="MOBILE" jdbcType="VARCHAR" property="mobile" />
+  </resultMap>
+
+    <select id="getId" resultType="Long">
+    select BNZ_ACCOUNT_SEQ.nextval from dual
+   </select>
+
+  <select id="queryAccountByUserName" resultType="com.rsd.domain.RsdAccountModel">
+    SELECT
+        a.*,
+        d.DICT_NAME AS sys_name,
+        o.ORG_NAME
+    FROM
+      RSD_ACCOUNT a,
+      RSD_DICT_INFO d,
+      RSD_ORG_INFO o
+    WHERE
+        a.SYS_ID = d.DICT_ID
+        AND d.DICT_CATEGORY_ID = 1
+        AND a.ORG_ID = o.ID
+        AND a.USER_NAME = #{model.userName}
+      <if test="model.sysId != null" >
+        AND a.SYS_ID = #{model.sysId}
+      </if>
+  </select>
+
+
+  <select id="queryUserPermissionRoleByUserId" resultType="com.rsd.domain.RsdRes">
+  SELECT
+      cc.*
+  FROM
+      RSD_ACCOUNT aa,
+      RSD_ROLE bb,
+      RSD_RES cc,
+      RSD_ROLE_RES dd
+  WHERE
+      aa.id = #{accountId}
+      AND aa.ROLE_ID = bb.id
+      AND dd.Role_id = bb.id
+      AND cc.id = dd.RES_ID
+  ORDER BY
+      cc.seq
+    </select>
+
+
+
+    <select id="queryAccountList" resultType="com.rsd.domain.RsdAccountModel">
+    SELECT
+        a.*,
+        r.NAME AS role_name,
+        d.DICT_NAME AS sys_name,
+        o.ORG_NAME
+    FROM
+        RSD_ACCOUNT a,
+        RSD_DICT_INFO d,
+        RSD_ORG_INFO o,
+        RSD_ROLE r
+    WHERE
+        a.SYS_ID = d.DICT_ID
+        AND d.DICT_CATEGORY_ID = 1
+        AND a.ORG_ID = o.ID
+        AND a.ROLE_ID = r.ID
+    <if test="model.sysId != null" >
+        AND a.SYS_ID = #{model.sysId}
+    </if>
+    <if test="model.orgId != null" >
+        AND a.ORG_ID = #{model.orgId}
+    </if>
+    <if test="model.userName != null and model.userName != ''" >
+        and a.USER_NAME LIKE '%'||#{model.userName}||'%'
+    </if>
+    <if test="model.enabledState != null" >
+        AND a.ENABLED_STATE = #{model.enabledState}
+    </if>
+    <if test="model.orgName != null and model.orgName != ''" >
+        and o.ORG_NAME LIKE '%'||#{model.orgName}||'%'
+    </if>
+        order by a.id
+    </select>
+
+    <update id="updateAccountIsService">
+        update RSD_ACCOUNT set is_service = 0 where is_service = 1 and sys_id = 1
+    </update>
+
+    <update id="updateAccountRoleByOrgId">
+        UPDATE RSD_ACCOUNT
+        SET ROLE_ID = #{model.roleId}
+        WHERE
+            ORG_ID = #{model.orgId}
+    </update>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzNoticeReadMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzNoticeRead">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="NOTICE_ID" jdbcType="DECIMAL" property="noticeId" />
+    <result column="ORG_ID" jdbcType="DECIMAL" property="orgId" />
+    <result column="ACCOUNT_ID" jdbcType="DECIMAL" property="accountId" />
+    <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser" />
+    <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime" />
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+    <result column="CREATE_TIME" jdbcType="DATE" property="createTime" />
+  </resultMap>
+
+  <select id="getId" resultType="Long">
+    select BNZ_NOTICE_READ_SEQ.nextval from dual
+  </select>
+</mapper>

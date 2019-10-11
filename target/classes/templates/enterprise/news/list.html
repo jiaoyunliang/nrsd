@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="/enterprise/global :: #common"></head>
+<link rel="stylesheet" th:href="@{/lib/element-ui/lib/theme-chalk/index.css}">
+<body>
+<div class="hsptAll">
+    <div th:replace="/enterprise/global :: #header"></div>
+    <div th:replace="/enterprise/global :: #navbar"></div>
+    <div class="center" >
+        <div class="list_a" th:if="${newsType==1}"><a th:href="@{/enterprise/index}"> 首页 </a>&gt; <a th:href="@{/enterprise/news/list?newsType=1}">资料下载</a></div>
+        <div class="list_a" th:if="${newsType==2}"><a th:href="@{/enterprise/index}"> 首页 </a>&gt; <a th:href="@{/enterprise/news/list?newsType=2}">行业动态</a></div>
+        <div class="list_a" th:if="${newsType==3}"><a th:href="@{/enterprise/index}"> 首页 </a>&gt; <a th:href="@{/enterprise/news/list?newsType=3}">项目公告</a></div>
+        <div class="list_b" id="newsTable" th:attr="newsType=${newsType}">
+            <template>
+                <div>
+                    <el-row>
+                        <el-col :span="24" style="min-height: 500px">
+                            <el-table
+                                    :data="dataList"
+                                    :show-header="false"
+                            >
+                                <el-table-column
+                                        prop="title"
+                                        label="标题"
+                                        :show-overflow-tooltip="true"
+                                >
+                                    <template slot-scope="scope">
+                                        <p v-html="newsHref(scope.row)"></p>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="createTime" label="发布时间" width="120">
+                                    <template slot-scope="scope" >
+                                        {{ scope.row.createTime | dateFormat}}
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col>
+                            <el-pagination
+                                    v-bind:current-page="pageInfo.current"
+                                    v-bind:page-size="pageInfo.size"
+                                    :total="pageInfo.total"
+                                    layout="total,sizes,prev,pager,next,jumper"
+                                    v-bind:page-sizes="[10, 50, 100]"
+                                    v-on:size-change="changePageSize"
+                                    v-on:current-change="pageIndexChange">
+                            </el-pagination>
+                        </el-col>
+                    </el-row>
+                </div>
+            </template>
+        </div>
+    </div>
+    <div th:replace="/enterprise/global :: #footer"></div>
+</div>
+
+
+
+<script type="text/javascript" th:src="@{/lib/moment/moment.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/lib/element-ui/lib/index.js}"></script>
+<script type="text/javascript" th:src="@{/lib/axios/dist/axios.js}"></script>
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
+<script type="text/javascript" th:src="@{/enterprise/js/news/news.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function(){
+    });
+    /*]]>*/
+</script>
+
+<style>
+</style>
+</body>
+</html>

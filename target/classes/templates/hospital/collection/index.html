@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/hospital/global :: #common"></head>
+<body>
+<div class="hsptAll">
+    <div th:replace="/hospital/global :: #header"></div>
+    <div th:replace="/hospital/global :: #navbar"></div>
+    <div class="center">
+        <div class="list_b_1">
+            <ul>
+                <li id="tag_1" onclick="changeTag(1)">关注产品</li>
+                <li id="tag_2" onclick="changeTag(2)">已再用产品</li>
+                <li id="tag_3" onclick="changeTag(3)">企业</li>
+            </ul>
+            <div class="list_b_1_1">
+                <input type="text" id="searchParam" th:value="${searchParam}">
+                <button onclick="search()">搜索</button>
+            </div>
+        </div>
+
+        <div class="hspt_wf">
+            <ul class="clearfix picture" id="collectionTable" th:attr="category=${category},searchParam=${searchParam}">
+            </ul>
+            <div id="load">can you see me?</div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+
+    $(document).ready(function(){
+        let _category = $("#collectionTable").attr("category");
+        $("#tag_"+_category).addClass("hover");
+        new WaterFall($("#load"),10,1,_category).listenerScroll();
+    });
+
+    function changeTag(category) {
+        location.href=getCtx()+'/hospital/collection/index?c=001002&category='+category;
+    }
+
+    function search() {
+        let _category = $("#collectionTable").attr("category");
+        let _searchParam = $("#searchParam").val();
+        location.href=getCtx()+'/hospital/collection/index??c=001002&category='+_category+'&searchParam='+_searchParam;
+    }
+    /*]]>*/
+</script>
+<script type="text/javascript" th:src="@{/hospital/js/collection/WaterFall.js}"></script>
+
+<style>
+    .hspt_wf {
+        width: 1200px;
+        margin-top: .875rem;
+    }
+
+    .hspt_wf ul li:hover{box-shadow:0px 0px 20px rgba(0,0,0,0.2);}
+
+    .clearfix::after {
+        content: "";
+        display: block;
+        clear: both;
+    }
+    .picture {
+        position: relative;
+        /* border: 1px solid gray; */
+    }
+    .picture .item {
+        position: absolute;
+        padding: 0 0 10px 0;
+        width: 280px;
+        margin: 10px;
+        border: 1px solid #dfdfdf;
+        background: #fff;
+        opacity: 0;
+        transition: all .8s;
+    }
+
+    .item img {
+        width: 100%;
+    }
+
+    .item p {
+        line-height: 24px;
+        height: 58px;
+        overflow: hidden;
+        padding: 10px 10px 0px;
+        color: #151515;
+        text-align: center;
+    }
+
+    #load {
+        visibility: hidden;
+    }
+</style>
+</body>
+</html>

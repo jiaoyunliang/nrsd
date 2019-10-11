@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/enterprise/global :: #common"></head>
+<body>
+<div class="hsptAll">
+    <div th:replace="/enterprise/global :: #header"></div>
+    <div th:replace="/enterprise/global :: #navbar"></div>
+    <div class="center">
+        <div class="list_a">
+            <a th:href="@{/enterprise/index}"> 首页 </a>&gt;
+            <a th:href="@{/enterprise/sysMsg/index?c=001003}">系统消息</a>
+        </div>
+        <div class="hspt_title"><h1 th:text="${notice.title}"/>
+            <p th:text="${#dates.format(notice.createTime, 'yyyy-MM-dd')}"></p>
+        </div>
+        <div class="hspt_n" style="min-height: 400px">
+            <p  th:utext="${notice.content}"/>
+        </div>
+    </div>
+    <div th:replace="/hospital/global :: #footer"></div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function(){
+    });
+    /*]]>*/
+</script>
+
+
+<style>
+
+</style>
+</body>
+</html>

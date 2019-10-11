@@ -1,0 +1,200 @@
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+<div id="common">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:name="${#request.getContextPath()}">海虹帮您找</title>
+    <link rel="stylesheet" th:href="@{/hospital/css/css.css}" />
+    <link rel="stylesheet" th:href="@{/icomoon/style.css}" />
+    <script type="text/javascript" th:src="@{/js/jquery-1.9.1.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.serializejson.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/Touch.js}"></script>
+    <script th:src="@{/hospital/js/global.js}"></script>
+    <script type="text/javascript" th:inline="javascript">
+        /*<![CDATA[*/
+
+        function login_tgg(){
+            $(".hspt_a_2").toggle(100);
+        }
+
+        function hLogout(){
+            $.ajax({
+                url:/*[[@{/hospital/logout}]]*/,
+                type: 'get',
+                dataType: 'json',
+                contentType: 'application/json',
+                async: true,
+                success: function(data){
+                    if(data.status==200){
+                        location.href=/*[[@{/hospital/index}]]*/;
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function(){
+            let nav_code = getUrlParam('c')
+            if(nav_code){
+                $("#"+nav_code).addClass("hover");
+            }
+
+            $(".more_meg").hide();
+        });
+        /*]]>*/
+    </script>
+    <div sec:authorize="isAuthenticated()">
+        <div th:unless="${#authorization.expression('hasRole(''ROLE_HOSPITAL'')')}">
+            <script>
+                hLogout();
+            </script>
+        </div>
+    </div>
+</div>
+
+
+<div id="indexHeader" class="hspt_header">
+    <div class="hspt_header_a"> <a th:href="@{/hospital/index}" class="header_logo"><img th:src="@{/hospital/images/logo.png}" width="40" height="40">海虹帮你找</a>
+        <div class="hspt_header_b"> <span>Find For You</span> —只为更高效的服务 </div>
+        <div sec:authorize="isAnonymous()" class="hspt_header_c">
+            <!--
+            <p>欢迎您，请<a href="javascript:void(0)" onClick="login_tgg()">登录</a></p>
+            -->
+        </div>
+        <div th:if="${#authorization.expression('hasRole(''ROLE_HOSPITAL'')')}" class="hspt_header_c">
+            <p>欢迎您 <span sec:authentication="name"></span> !<a href="javascript:void(0)" onClick="hLogout()">退出</a></p>
+        </div>
+    </div>
+</div>
+
+
+<div id="indexSearch" class="hspt_search">
+    <div class="hspt_search_a">
+        <input type="text" id="searchProductName" placeholder="输入产品名称">
+        <button type="button" id="searchProductBtn" onclick="searchProduct()">搜索</button>
+        <p>
+            热门推荐：
+            <a th:href="@{${item.adUrl}}"  th:each="item : ${session.keyword}"><span th:text="${item.name}"/></a>
+        </p>
+    </div>
+</div>
+
+<div id="header" class="hspt_header">
+    <link rel="stylesheet" th:href="@{/lib/element-ui/lib/theme-chalk/index.css}">
+    <div class="hspt_header_a"> <a th:href="@{/hospital/index}" class="header_logo"><img th:src="@{/hospital/images/logo.png}" width="40" height="40">海虹帮你找</a>
+        <div class="hspt_header_b"> <span>Find For You</span> —只为更高效的服务 </div>
+        <div sec:authorize="isAnonymous()" class="hspt_header_c" id="header_login">
+            <template>
+                <p  style="line-height: 3.5rem;font-size: .875rem;">
+                    欢迎 <a @click="handelOpenLoginDialog">请登录</a>
+                    <login-dialog :dialog-title="dialogTitle" :show-dialog.sync="isShowDialog"></login-dialog>
+                </p>
+            </template>
+            <script type="x-template" id="login-template">
+                <div>
+                    <el-dialog
+                            :top="dialogTop"
+                            :title="dialogTitle"
+                            :show-close="false"
+                            :close-on-click-modal="false"
+                            :visible="showDialog"
+                            @close="dialogClosed"
+                            width="40%"
+                    >
+                        <el-form
+                                :model="formData"
+                                label-width="80px"
+                                ref="form"
+
+                        >
+                            <el-form-item label="用户名:" prop="username" :rules="[{ required: true, message: '请输入用户名', trigger: 'blur' }]">
+                                <el-input v-model="formData.username" style="width: 70%"/>
+                            </el-form-item>
+                            <el-form-item label="密码:" prop="password" :rules="[{ required: true, message: '请输入密码', trigger: 'blur' }]">
+                                <el-input type="password" v-model="formData.password" style="width: 70%"/>
+                            </el-form-item>
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button type="primary" @click="doLogin">登录</el-button>
+                            <el-button @click="dialogClosed">关闭</el-button>
+                        </div>
+                    </el-dialog>
+                </div>
+            </script>
+        </div>
+        <div th:if="${#authorization.expression('hasRole(''ROLE_HOSPITAL'')')}" class="hspt_header_c">
+            <p class="header_meg">
+                欢迎您  <span sec:authentication="name"></span>
+                <a th:href="@{/hospital/sysMsg/index}">消息<i th:if="${session.noticeUnreadNum>0}" th:text="${session.noticeUnreadNum}"></i></a>
+                <a th:href="@{/hospital/account/toChangePasswd}">修改密码</a>
+                <a href="javascript:void(0)" onClick="hLogout()">退出</a>
+            </p>
+        </div>
+    </div>
+    <div sec:authorize="isAnonymous()">
+        <script type="text/javascript" th:src="@{/lib/vue/vue.js}"></script>
+        <script type="text/javascript" th:src="@{/lib/element-ui/lib/index.js}"></script>
+        <script type="text/javascript" th:src="@{/lib/axios/dist/axios.js}"></script>
+        <script th:src="@{/hospital/js/login.js}"></script>
+    </div>
+</div>
+
+
+<div id="navbar" class="hspt_nav box-shadow-bottom" th:if="${#authorization.expression('hasRole(''ROLE_HOSPITAL'')')}">
+    <ul>
+        <li><a href="/hospital/index">首页</a></li>
+        <li th:if="${item1.resCode!='001003'}" th:id="${item1.resCode}" th:each="item1,itemStat:${session.session_account_res[0].children}">
+            <a th:href="@{${item1.resUrl+'?c='+item1.resCode}}" th:text="${item1.resName}" />
+        </li>
+        <li><a href="#" onclick="showService()">服务专员</a></li>
+    </ul>
+
+
+    <div class="more_meg" style="display: none">
+        <div class="more_meg_all">
+            <div class="more_meg_top">服务专员<span class="icon-cross" onClick="$(this).parents('.more_meg').hide();"></span></div>
+            <div class="more_meg_center">
+                <img th:src="@{/hospital/images/icon_user.png}" width="145" height="145">
+                <div class="more_meg_center_right" th:if="${session.session_service_account!=null}">
+                    <h3 th:text="${session.session_service_account.nickname}"></h3>
+                    <p th:text="${'微信：'+session.session_service_account.wx}"></p>
+                    <p th:text="${'邮箱：'+session.session_service_account.email}"></p>
+                    <p th:text="${'手机：'+session.session_service_account.mobile}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div id="search" class="hspt_search box-shadow-bottom">
+    <div class="hspt_search_a">
+        <input type="text" id="searchProductName" placeholder="输入产品名称" th:value="${productName}"/>
+        <button type="button" onclick="searchProduct()">搜索</button>
+        <p th:if="${session.keyword!=null}">
+            热门推荐：
+            <a th:href="@{${item.adUrl}}" th:each="item : ${session.keyword}"><span th:text="${item.name}"/></a>
+        </p>
+    </div>
+</div>
+
+<div id="footer" class="footer">
+    <div class="footer_b">
+        <div class="footer_b_1">
+            <a target="_black" href="http://www.emedchina.cn/member/about/0">关于我们</a> |
+            <a target="_black" href="http://www.emedchina.cn/member/about/1">联系我们</a> |
+            <a target="_black" href="http://www.emedchina.cn/member/about/2">政策申明</a> |
+            <a target="_black" href="http://www.emedchina.cn/member/about/3">公司资质</a> |
+            <a target="_black" href="http://www.emedchina.cn/member">会员服务</a> </div>
+        <p>增值电信业务经营许可证编号：琼B2-20150042 </p>
+        <p>海南省食品药品监督管理局批准从事互联网药品信息服务资格证书编号：（琼）-经营性-2016-0006 </p>
+        <p>版权所有：海虹医药电子交易中心有限公司<a target="_blank" href="http://www.miibeian.gov.cn"> 琼ICP备18001518号-1 </a><img src="http://www.beian.gov.cn/img/ghs.png" width="14" height="14"><a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=46010602000175">琼公网安备 46010602000175号</a></p>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/enterprise/global :: #common"></head>
+<body>
+<div class="hsptAll">
+    <div th:replace="/enterprise/global :: #header"></div>
+    <div th:replace="/enterprise/global :: #navbar"></div>
+    <div class="center">
+        <div class="list_a">
+            <a th:href="@{/enterprise/index}"> 首页 </a>&gt;
+            <a th:href="@{/enterprise/product/list?c=001001}">产品管理</a>
+        </div>
+        <div class="list_b">
+            <div id="productTable">
+                <template>
+                    <div>
+                        <el-row style="margin-bottom: 10px;margin-top: 10px">
+                            <el-col :span="24">
+                                <label class="label">产品名称</label>
+                                <el-input
+                                        v-model="searchParams.productName"
+                                        style="width:200px"
+                                        clearable
+                                        placeholder="请输入产品名称"
+                                ></el-input>
+                                <label class="label">产品大类</label>
+                                <el-input
+                                        v-model="searchParams.productTypeName"
+                                        style="width:200px"
+                                        clearable
+                                        placeholder="请输入产品大类名称"
+                                ></el-input>
+                                <el-button type="primary" @click="handleSearchData">查询</el-button>
+                                <el-button type="primary" @click="openAddProduct">添加产品</el-button>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="24" style="min-height: 500px">
+                                <el-table
+                                        :data="dataList"
+                                >
+                                    <el-table-column
+                                            type="index"
+                                            label="序号"
+                                            width="50"
+                                            :index="typeIndex"
+                                    ></el-table-column>
+                                    <el-table-column
+                                            prop="productName"
+                                            label="产品名称"
+                                            :show-overflow-tooltip="true"
+                                    >
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="productTypeName"
+                                            label="产品大类"
+                                            :show-overflow-tooltip="true"
+                                    >
+                                    </el-table-column>
+                                    <el-table-column prop="createTime" label="发布时间">
+                                        <template slot-scope="scope">
+                                            {{ scope.row.createTime | dateFormat}}
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column label="操作" width="150">
+                                        <template slot-scope="scope">
+                                            <span v-html="viewHref(scope.row)"></span>
+                                            <span v-html="editHref(scope.row)"></span>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col>
+                                <el-pagination
+                                        v-bind:current-page="pageInfo.current"
+                                        v-bind:page-size="pageInfo.size"
+                                        :total="pageInfo.total"
+                                        layout="total,sizes,prev,pager,next,jumper"
+                                        v-bind:page-sizes="[10, 50, 100]"
+                                        v-on:size-change="changePageSize"
+                                        v-on:current-change="pageIndexChange">
+                                </el-pagination>
+                            </el-col>
+                        </el-row>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+    <div th:replace="/enterprise/global :: #footer"></div>
+</div>
+<script type="text/javascript" th:src="@{/lib/moment/moment.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/lib/element-ui/lib/index.js}"></script>
+<script type="text/javascript" th:src="@{/lib/axios/dist/axios.js}"></script>
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
+<script type="text/javascript" th:src="@{/enterprise/js/product/list.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function(){
+    });
+
+    /*]]>*/
+</script>
+<style>
+    .label{
+        margin: 2px 10px ;
+    }
+</style>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org"
+>
+
+<head th:include="/hospital/fragments/common :: #common"></head>
+<body>
+<div class="hsptAll">
+  <div th:replace="/hospital/global :: #header"></div>
+  <div th:replace="/hospital/global :: #navbar"></div>
+  <div class="center">
+    <div class="list_a">
+      <a th:href="@{/hospital/index}"> 首页 </a>&gt;
+      <a th:href="@{/hospital/qua/list?c=001005}">院内资质</a>
+    </div>
+    <div class="list_b">
+      <div id="hosptialquadetail">
+        <template>
+          <input type="hidden" ref="quaTypeInput" th:value="${quaType}">
+          <input type="hidden" ref="urlInput" th:value="${serverUrl}">
+          <el-row style="margin-bottom: 10px;margin-top: 10px">
+            <el-col>
+              <el-tag type="info" th:text="${quaName}"></el-tag>
+              <el-button type="primary" icon="el-icon-back" @click="onback">返回</el-button>
+            </el-col>
+          </el-row>
+          <el-row style="margin-bottom: 10px;margin-top: 10px">
+            <el-col :span="6">
+              企业名称：
+              <el-input
+                v-model="searchParams.orgName"
+                style="width:200px"
+                placeholder="请输入企业名称"
+              ></el-input>
+            </el-col>
+            <el-col :span="6">
+              <el-button type="primary" @click="handleSearchData">查询</el-button>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24" class="list_w">
+              <el-table
+                :data="dataList"
+                height="500px"
+                style="width: 100%"
+                v-loading="loading"
+              >
+                <el-table-column
+                  type="index"
+                  :index="typeIndex"
+                  label="序号"
+                  width="50"
+                >
+                </el-table-column>
+                <el-table-column prop="quaName" label="资质名称">
+                  <template scope="scope">
+                    <span v-if="scope.row.validState=1" style="color:red">{{ scope.row.quaName }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="orgName" label="企业名称">
+                  <template scope="scope">
+                    <span v-if="scope.row.validState=1" style="color:red">{{ scope.row.orgName }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="validityDate" label="有效期">
+                  <template scope="scope">
+                    <span v-if="scope.row.validState=1"
+                          style="color:red">{{ scope.row.validityDate | dateFormat}}</span>
+                    <span v-else>{{ scope.row.validityDate | dateFormat}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" width="350">
+                  <template slot-scope="scope">
+                    <el-button
+                      type="primary"
+                      icon="el-icon-search"
+                      @click="handleSearchQuaImage(scope.row.bnzFileRelation)"
+                    ></el-button>
+                    <el-button type="primary" icon="el-icon-edit" @click="handleEditHospitalQua(scope.row)"></el-button>
+                    <el-button type="primary" icon="el-icon-delete"
+                               @click="handelDeleteHospitalQua(scope.row.id)"></el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col>
+              <el-pagination
+                v-bind:current-page="pageInfo.current"
+                v-bind:page-size="pageInfo.size"
+                :total="pageInfo.total"
+                layout="total,sizes,prev,pager,next,jumper"
+                v-bind:page-sizes="[10, 50, 100]"
+                v-on:size-change="changePageSize"
+                v-on:current-change="pageIndexChange"
+              ></el-pagination>
+            </el-col>
+          </el-row>
+          <watch-hospital-qua-image-component :dialog-title="imageDialogTitle"
+                                              :show-dialog.sync="imageShowDialog"
+                                              :imgs="imgs">
+          </watch-hospital-qua-image-component>
+          <edit-hospital-qua-detail-component
+            :dialog-title="dialogTitle"
+            :show-dialog.sync="showDialog"
+            :hospital-detail-info="hospitalDetailInfo"
+            :url="url"
+            :refresh-list="onRefreshList">
+          </edit-hospital-qua-detail-component>
+        </template>
+      </div>
+    </div>
+  </div>
+  <div th:replace="/hospital/fragments/footer :: #footer">&copy; 2017 The Static Templates</div>
+</div>
+
+
+<script type="x-template" id="edit-hospital-qua-detail-template">
+  <div>
+    <el-dialog
+      :title="dialogTitle"
+      :close-on-click-modal="false"
+      :visible="showDialog"
+      @close="tallDataListChanged"
+    >
+      <el-form
+        :model="currentData"
+        :rules="rules"
+        ref="formObject"
+        label-position="left"
+        label-width="80px"
+      >
+        <el-form-item label="资质名称" prop="quaName">
+          <el-input
+            v-model="currentData.quaName" required="true"
+            style="width:240px"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="企业名称" prop="orgName">
+          <el-input
+            v-model="currentData.orgName"
+            style="width:240px"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="有效期" prop="validityDate">
+          <el-date-picker
+            v-model="currentData.validityDate"
+            type="date"
+            placeholder="请选择项目时间"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="上传">
+          <el-upload
+            class="upload-demo"
+            ref="elUpload"
+            accept="image/jpeg,image/gif,image/png"
+            :multiple="false"
+            :before-upload="handleBeforeUpload"
+            :on-exceed="handleExceed"
+            :on-preview="handlePreview"
+            :before-remove="beforeRemove"
+            :on-remove="afterRemove"
+            :on-success="handleSuccess"
+            :action="handelUploadUrl()"
+            :file-list="imgs"
+            list-type="picture"
+            :limit="5"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">
+              只能上传jpg/png/jpeg，且不超过5M
+            </div>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleEditHospitalQua">保存</el-button>
+        <el-button @click="tallDataListChanged">关闭</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</script>
+<script type="x-template" id="watch-hospital-qua-image-template">
+  <div class="content">
+    <el-dialog
+      :center="true"
+      :title="dialogTitle"
+      :close-on-click-modal="false"
+      :modal="false"
+      :visible="showDialog"
+      @close="tallDataListChanged"
+    >
+      <div class="content">
+        <viewer :images="imgs">
+          <el-row>
+            <div class="block">
+              <img
+                width="200px"
+                height="200px"
+                v-for="src in imgs"
+                :src="src.url"
+                :key="src.title"
+              />
+              <div>点击查看大图</div>
+            </div>
+          </el-row>
+        </viewer>
+      </div>
+    </el-dialog>
+  </div>
+</script>
+<script type="text/javascript" th:src="@{/lib/vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/lib/element-ui/lib/index.js}"></script>
+<script type="text/javascript" th:src="@{/lib/vue/vuex.js}"></script>
+<script type="text/javascript" th:src="@{/lib/viewer/viewer.js}"></script>
+<script type="text/javascript" th:src="@{/lib/viewer/v-viewer.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/moment/moment.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/axios/dist/axios.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
+<script type="text/javascript" th:src="@{/hospital/js/qua/edithospitalquadetail.js}"></script>
+<script type="text/javascript" th:src="@{/hospital/js/qua/hospitalquawatchimage.js}"></script>
+<script type="text/javascript" th:src="@{/hospital/js/qua/hospitalquadetail.js}"></script>
+</body>
+</html>
+

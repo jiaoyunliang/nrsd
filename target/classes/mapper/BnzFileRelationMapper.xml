@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzFileRelationMapper">
+    <resultMap id="BaseResultMap" type="com.rsd.domain.BnzFileRelation">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="ID" jdbcType="DECIMAL" property="id"/>
+        <result column="FILE_URL" jdbcType="VARCHAR" property="fileUrl"/>
+        <result column="FILE_NAME" jdbcType="VARCHAR" property="fileName"/>
+        <result column="TYPE" jdbcType="DECIMAL" property="type"/>
+        <result column="CATEGORY" jdbcType="DECIMAL" property="category"/>
+        <result column="CATEGORY_ID" jdbcType="DECIMAL" property="categoryId"/>
+        <result column="IS_DEL" jdbcType="DECIMAL" property="isDel"/>
+        <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser"/>
+        <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime"/>
+        <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser"/>
+        <result column="CREATE_TIME" jdbcType="DATE" property="createTime"/>
+    </resultMap>
+
+    <sql id="baseSql">
+        id,file_url,file_name,type,category,category_id,
+		update_user,
+		update_time, create_user, create_time
+    </sql>
+    <sql id="is_del">
+        and is_del=0
+    </sql>
+    <insert id="insertModel" keyProperty="id" useGeneratedKeys="false">
+        <selectKey resultType="Long" keyProperty="model.id" order="BEFORE">
+            select BNZ_FILE_RELATION_SEQUENCE.nextval as id from dual
+        </selectKey>
+        insert into BNZ_FILE_RELATION(id, file_url,file_name,type,
+        category,category_id,is_del,create_user, create_time)
+        values(#{model.id},
+        #{model.fileUrl,jdbcType=VARCHAR},
+        #{model.fileName,jdbcType=VARCHAR},
+        #{model.type},
+        #{model.category},
+        #{model.categoryId},
+        #{model.isDel},
+        #{model.createUser},sysdate)
+    </insert>
+    <update id="deleteModel">
+        update BNZ_FILE_RELATION
+        set is_del=1
+        where id = #{id}
+    </update>
+    <update id="deleteFileByCategoryId">
+        update BNZ_FILE_RELATION
+        set is_del=1
+        where category_id = #{categoryId}
+          and category = #{category}
+    </update>
+    <select id="get" resultType="com.rsd.domain.BnzFileRelation">
+        select
+        <include refid="baseSql"></include>
+        from BNZ_FILE_RELATION
+        where id = #{id}
+    </select>
+    <select id="searchFileByCategoryId" resultType="com.rsd.domain.BnzFileRelation">
+        select
+        <include refid="baseSql"></include>
+        from BNZ_FILE_RELATION where category=#{category} and
+        category_id=#{categoryId}
+        <include refid="is_del"></include>
+    </select>
+
+</mapper>

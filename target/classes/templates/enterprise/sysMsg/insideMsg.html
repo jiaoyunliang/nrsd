@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/enterprise/global :: #common"></head>
+<body>
+<div class="hsptAll">
+    <div th:replace="/enterprise/global :: #header"></div>
+    <div th:replace="/enterprise/global :: #navbar"></div>
+    <div class="center" th:attr="msg_id=${msg.id},reply_id=${replyMsg.id}">
+        <div class="list_a">
+            <a th:href="@{/enterprise/index}"> 首页 </a>&gt;
+            <a th:href="@{/enterprise/sysMsg/index?c=001003}">系统消息</a>
+        </div>
+        <div class="hspt_title"><h1 th:text="${msg.title}"/>
+            <p th:text="${#dates.format(msg.createTime, 'yyyy-MM-dd')}"></p>
+        </div>
+        <div class="hspt_n">
+            <p  th:utext="${msg.content}"/>
+        </div>
+        <div class="hspt_s" style="min-height: 400px">
+            <table>
+                <tbody>
+                <tr th:if="${replyMsg.replyTime!=null}">
+                    <td>
+                        <div class="hspt_s_1">
+                            <p th:text="${replyMsg.replyContent}"></p>
+                            <div class="hspt_s_1_1" th:text="${#dates.format(replyMsg.replyTime, 'yyyy-MM-dd')}"></div>
+                        </div>
+                    </td>
+                    <td>
+                        <img src="../images/12322.jpg">
+                    </td>
+                </tr>
+                <tr th:if="${replyMsg.replyTime==null}">
+                    <td><textarea rows="5" class="textarea_r" id="replyContent"></textarea></td>
+                    <td>
+                        <button class="btn_r" onclick="onSubmit()">提交回复</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div th:replace="/hospital/global :: #footer"></div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function(){
+    });
+    
+    function onSubmit() {
+
+        if($("#replyContent").val().trim()=='' || $("#replyContent").val().length>400){
+            alert('请填写回复内容且不能大于400字符！');
+        }
+
+
+        let param = {
+            id:$('.center').attr("reply_id"),
+            msgId:$('.center').attr("msg_id"),
+            replyContent:$("#replyContent").val()
+        };
+
+        console.log(param);
+        $.ajax({
+            url: getCtx()+'/enterprise/sysMsg/saveReplyMsg',
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(param),
+            success: function(rs){
+                if(rs.result==200){
+                    location.reload();
+                } else {
+                    alert(rs.exceptionMsg)
+                    location.reload();
+                }
+            }
+        });
+    }
+    
+    /*]]>*/
+</script>
+
+
+<style>
+.textarea_r {
+    display: block;
+    resize: vertical;
+    padding: 5px 15px;
+    line-height: 1.5;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    font-size: inherit;
+    color: #606266;
+    background-color: #FFF;
+    background-image: none;
+    border: 1px solid #DCDFE6;
+    border-radius: 4px;
+    -webkit-transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+    transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+}
+.btn_r {
+    height: 30px;
+    border: 1px solid #19B293;
+    border-radius: 3px;
+    background-color: #19B293;
+    padding: 0 15px;
+    margin-left: 20px;
+    color: #FFF;
+}
+</style>
+</body>
+</html>

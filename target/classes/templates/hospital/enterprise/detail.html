@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/hospital/global :: #common"></head>
+<body>
+<div class="hsptAll">
+    <div th:replace="/hospital/global :: #header"></div>
+    <div th:replace="/hospital/global :: #navbar"></div>
+    <div class="center" id="org" th:attr="org_id=${detail.orgId}" style="min-height: 500px">
+        <div class="hspt_position"> </div>
+        <div class="hspt_title">
+            <h1 th:text="${detail.orgName}"/>
+            <p style="width: 100%;text-align: right" class="hspt_k_2_1_2">
+                &nbsp;
+                <button th:if="${detail.bnzCollections==null}" id="collect_1" type="button" class="on" onclick="addCollections()">关注</button>
+                <button th:if="${detail.bnzCollections!=null}" id="collect_2" type="button" onclick="removeCollection()">已关注</button>
+            </p>
+        </div>
+        <div class="hspt_n"> <img th:if="${detail.orgPic!=null}" th:src="${fileServer}+${detail.orgPic.fileUrl}" />
+            <p th:text="${detail.remark}"/>
+        </div>
+        <div class="hspt_p">
+            <p th:text="${'联系人：'+detail.contact}"/>
+            <p th:text="${'联系方式：'+detail.contactInfo}"/>
+            <p th:text="${'企业网址：'+detail.website}"/>
+        </div>
+        <div class="hspt_q">
+            <p th:if="${detail.brandType==1}">自主品牌</p>
+            <p th:if="${detail.brandType==2}">代理品牌</p>
+        </div>
+        <div class="hspt_r">
+            <ul>
+                <li th:each="item,itemStat : ${detail.brandLogo}">
+                    <img th:src="${fileServer}+${item.fileUrl}">
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div th:replace="/hospital/global :: #footer"></div>
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+
+    $(document).ready(function(){
+    });
+
+    function addCollections(){
+        let param = {
+            category:3,
+            categoryId:$("#org").attr("org_id")
+        };
+
+        $("button[id^='collect_']").each(function () {
+            $(this).attr('disabled',true);
+        });
+
+        $.ajax({
+            url:/*[[@{/hospital/collection/addCollection}]]*/,
+            type: 'post',
+            dataType: 'json',
+            data:JSON.stringify(param),
+            contentType: 'application/json',
+            success: function(data){
+                if(data.result==200){
+                    window.location.reload();
+                } else {
+                    window.location.reload();
+                }
+            }
+        });
+    }
+
+    function removeCollection(){
+        let param = {
+            category:3,
+            categoryId:$("#org").attr("org_id")
+        };
+
+        $("button[id^='collect_']").each(function () {
+            $(this).attr('disabled',true);
+        });
+
+        $.ajax({
+            url:/*[[@{/hospital/collection/removeCollection}]]*/,
+            type: 'post',
+            dataType: 'json',
+            data:JSON.stringify(param),
+            contentType: 'application/json',
+            success: function(data){
+                if(data.result==200){
+                    window.location.reload();
+                } else {
+                    window.location.reload();
+                }
+            }
+        });
+    }
+
+    /*]]>*/
+</script>
+
+
+<style>
+    .on {
+        width: 106px;
+        height: 34px;
+        border: 1px solid #DF213D;
+        border-radius: 5px;
+        margin-bottom: 8px;
+        background-color: #DF213D;
+        color: #FFF;
+    }
+</style>
+</body>
+</html>

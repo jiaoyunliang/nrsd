@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzProductMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzProduct">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="ORG_ID" jdbcType="DECIMAL" property="orgId" />
+    <result column="PRODUCT_TYPE_ID" jdbcType="DECIMAL" property="productTypeId" />
+    <result column="PRODUCT_NAME" jdbcType="VARCHAR" property="productName" />
+    <result column="GENERIC_NAME" jdbcType="VARCHAR" property="genericName" />
+    <result column="BRAND_NAME" jdbcType="VARCHAR" property="brandName" />
+    <result column="MANUFACTURER" jdbcType="VARCHAR" property="manufacturer" />
+    <result column="IS_HOSPITAL_VIEW" jdbcType="DECIMAL" property="isHospitalView" />
+    <result column="IS_ORG_VIEW" jdbcType="DECIMAL" property="isOrgView" />
+    <result column="IS_HOT" jdbcType="DECIMAL" property="isHot" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="IS_DEL" jdbcType="DECIMAL" property="isDel" />
+    <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser" />
+    <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime" />
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+    <result column="CREATE_TIME" jdbcType="DATE" property="createTime" />
+  </resultMap>
+
+
+    <select id="getId" resultType="Long">
+      select BNZ_PRODUCT_SEQ.nextval from dual
+    </select>
+
+  <select id="queryProductList" resultType="com.rsd.domain.BnzProductModel">
+    SELECT
+        t.*,
+        t1.org_name,
+        t2.name product_type_name
+    FROM
+        BNZ_PRODUCT t,
+        BNZ_ORG_INFO t1,
+        BNZ_PRODUCT_TYPE t2
+    WHERE
+        t.IS_DEL = 0
+        AND t.ORG_ID = t1.ID
+        AND t.PRODUCT_TYPE_ID = t2.ID
+      <if test="model.productName != null and model.productName != ''" >
+        and t.PRODUCT_NAME LIKE '%'||#{model.productName}||'%'
+      </if>
+      <if test="model.orgId != null" >
+          and t.ORG_ID = #{model.orgId}
+      </if>
+      <if test="model.orgName != null and model.orgName != ''" >
+        and t1.ORG_NAME LIKE '%'||#{model.orgName}||'%'
+      </if>
+      <if test="model.productTypeName != null and model.productTypeName != ''" >
+        and t2.name LIKE '%'||#{model.productTypeName}||'%'
+      </if>
+      <if test="model.productTypeId != null" >
+        AND t.PRODUCT_TYPE_ID = #{model.productTypeId}
+      </if>
+      order by t.CREATE_TIME desc
+  </select>
+
+  <select id="selectProductList" resultType="com.rsd.domain.BnzProductModel">
+    SELECT
+        t.*,
+        t1.org_name,
+        t2.name product_type_name
+    FROM
+        BNZ_PRODUCT t,
+        BNZ_ORG_INFO t1,
+        BNZ_PRODUCT_TYPE t2
+    WHERE
+        t.IS_DEL = 0
+        AND t.ORG_ID = t1.ID
+        AND t.PRODUCT_TYPE_ID = t2.ID
+        <if test="model.isHot != null" >
+          AND t.IS_HOT = 1
+        </if>
+        <if test="model.productTypeId != null" >
+          AND t.PRODUCT_TYPE_ID = #{model.productTypeId}
+        </if>
+        <if test="model.isHospitalView != null" >
+          AND t.IS_HOSPITAL_VIEW = #{model.isHospitalView}
+        </if>
+        order by dbms_random.value()
+  </select>
+
+    <select id="queryProductById" resultType="com.rsd.domain.BnzProductModel">
+    SELECT
+        t.*,
+        t1.org_name,
+        t2.name product_type_name
+    FROM
+        BNZ_PRODUCT t,
+        BNZ_ORG_INFO t1,
+        BNZ_PRODUCT_TYPE t2
+    WHERE
+        t.ORG_ID = t1.ID
+        AND t.PRODUCT_TYPE_ID = t2.ID
+        and t.id = #{id}
+    </select>
+</mapper>

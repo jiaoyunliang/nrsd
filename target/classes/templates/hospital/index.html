@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:include="/hospital/global :: #common"></head>
+<body>
+<div th:replace="/hospital/global :: #indexHeader"></div>
+<div th:replace="/hospital/global :: #indexSearch"></div>
+<div class="center">
+    <div class="hspt_a">
+        <div class="hspt_a_1" id="index_banner">
+            <div class="tempWrap" style="overflow:hidden; position:relative;">
+                <ul id="banmain" style="width: 6020px; position: relative; overflow: hidden; padding: 0px; margin: 0px; transition-duration: 500ms; transform: translate(-4300px, 0px) translateZ(0px);">
+                    <li style="display: table-cell; vertical-align: top; width: 860px;" th:each="item : ${adGroup1}">
+                        <a th:href="${item.adUrl}">
+                            <img th:src="${fileServer}+${item.picPath}"/>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <ol id="bantit"><li class="">1</li><li class="">2</li><li class="">3</li><li class="">4</li><li class="on">5</li></ol>
+        </div>
+        <script type="text/javascript">
+            TouchSlide({
+                slideCell:"#index_banner",
+                titCell:"#bantit",
+                mainCell:"#banmain",
+                effect:"leftLoop",
+                autoPage:true,
+                autoPlay:true,
+                interTime:5000,
+                delayTime:500
+            });
+        </script>
+        <div class="hspt_a_2">
+            <div sec:authorize="isAnonymous()">
+                <div class="login_all">
+                    <div class="login_title">登录</div>
+                    <form id="loginFm" th:action="@{/hospital/doLogin}" method="post">
+                        <div class="login_from">
+                            <div class="login_line">用户名：
+                                <input type="text" name="username" id="username">
+                            </div>
+                            <div class="login_line">密　码：
+                                <input type="password" name="password" id="password">
+                            </div>
+                            <div class="login_line">
+                                <!--<a href="#">忘记密码</a>-->
+                            </div>
+                            <div class="login_line">
+                                <button type="button" onclick="doLogin()">登　　录</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="login_buttom"> 高效，便捷的管理服务<a href="#">马上加入</a> </div>
+                </div>
+            </div>
+            <div th:if="${#authorization.expression('hasRole(''ROLE_HOSPITAL'')')}">
+                <div class="login_all">
+                    <div class="login_title">您好，乐普医疗</div>
+                    <div class="login_from">
+                        <ul>
+                            <li th:if="${#auth.checkAuthCode('2','001001')}"><a th:href="@{'/hospital/enterprise/index?c=001001'}"><img src="images/icon_building.png">企业黄页</a></li>
+                            <li th:if="${#auth.checkAuthCode('2','001002')}"><a th:href="@{'/hospital/collection/index?c=001002'}"><img src="images/icon_star.png">我的收藏</a></li>
+                            <li th:if="${#auth.checkAuthCode('2','001005')}"><a th:href="@{'/hospital/qua/list?c=001005'}"><img src="images/icon_folder.png">资质管理</a></li>
+                            <li th:if="${#auth.checkAuthCode('2','001004')}"><a th:href="@{'/hospital/project/list?c=001004'}"><img src="images/icon_computer.png">数据查询</a></li>
+                            <!--<li><a href="#"><img src="images/icon_box.png">我的评价<span>1</span></a></li>-->
+                            <li th:if="${#auth.checkAuthCode('2','001003')}"><a th:href="@{'/hospital/sysMsg/index?c=001003'}"><img src="images/icon_smg.png">系统消息<span th:if="${session.noticeUnreadNum>0}" th:text="${session.noticeUnreadNum}"></span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--新闻 start-->
+    <div class="hspt_b">
+        <div class="hspt_b_1">
+            <div class="center_a_1_1">
+                <div class="gg_title">
+                    <h2>政府文件</h2>
+                    <a th:href="@{/hospital/news/list?newsType=4}" class="">更多&gt;&gt;</a> </div>
+                <ul>
+                    <li th:each="item : ${news4}">
+                        <a th:href="@{/hospital/news/detail(id=${item.id})}" th:text="${item.title}" th:if="${item.isRed==1}" style="color: #f56c6c"></a>
+                        <a th:href="@{/hospital/news/detail(id=${item.id})}" th:text="${item.title}" th:if="${item.isRed!=1}"></a>
+                        <!--<img th:src="@{/hospital/images/icon_new.png}" width="27" height="14"/>-->
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="hspt_b_2">
+            <div class="center_a_1_1">
+                <div class="gg_title">
+                    <h2>工作动态</h2>
+                    <a th:href="@{/hospital/news/list?newsType=5}" class="">更多&gt;&gt;</a> </div>
+                <ul>
+                    <li th:each="item : ${news5}">
+                        <a th:href="@{/hospital/news/detail(id=${item.id})}" th:text="${item.title}" th:if="${item.isRed==1}" style="color: #f56c6c"></a>
+                        <a th:href="@{/hospital/news/detail(id=${item.id})}" th:text="${item.title}" th:if="${item.isRed!=1}"></a>
+                        <!--<img th:src="@{/hospital/images/icon_new.png}" width="27" height="14"/>-->
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="hspt_b_3">
+            <a th:href="${adGroup5[0].adUrl}">
+                <img th:src="${fileServer}+${adGroup5[0].picPath}">
+            </a>
+        </div>
+        <div class="hspt_b_4">
+            <div class="center_a_1_1">
+                <div class="gg_title">
+                    <h2>资料下载</h2>
+                    <a th:href="@{/hospital/news/list?newsType=6}" class="">更多&gt;&gt;</a> </div>
+                <ul>
+                    <li th:each="item : ${news6}">
+                        <a th:href="@{/hospital/news/detail(id=${item.id})}" th:text="${item.title}" th:if="${item.isRed==1}" style="color: #f56c6c"></a>
+                        <a th:href="@{/hospital/news/detail(id=${item.id})}" th:text="${item.title}" th:if="${item.isRed!=1}"></a>
+                        <!--<img th:src="@{/hospital/images/icon_new.png}" width="27" height="14"/>-->
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="hspt_b_5">
+            <div class="center_a_1_1">
+                <div class="gg_title">
+                    <h2>企业评价</h2>
+                    <a th:href="@{/hospital/news/list?newsType=7}" class="">更多&gt;&gt;</a> </div>
+                <ul>
+                    <li th:each="item : ${news7}">
+                        <a th:href="@{/hospital/news/detail(id=${item.id})}" th:text="${item.title}" th:if="${item.isRed==1}" style="color: #f56c6c"></a>
+                        <a th:href="@{/hospital/news/detail(id=${item.id})}" th:text="${item.title}" th:if="${item.isRed!=1}"></a>
+                        <!--<img th:src="@{/hospital/images/icon_new.png}" width="27" height="14"/>-->
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="hspt_b_6">
+            <a th:href="${adGroup5[1].adUrl}">
+                <img th:src="${fileServer}+${adGroup5[1].picPath}">
+            </a>
+        </div>
+    </div>
+    <!--新闻 end-->
+
+    <!-- 推荐产品 top start-->
+    <div class="hspt_c">
+        <div class="hspt_c_1"><h1>推荐产品</h1></div>
+        <ul>
+            <li th:each="item,itemStat : ${session.hotProductList}" th:if="${itemStat.count}<=5">
+                <a th:href="@{/hospital/product/view(id=${item.id})}">
+                    <img style="width: 203px;height: 180px" th:each="pic,picStat : ${item.picList}" th:if="${picStat.count}==1" th:src="${fileServer}+${pic.fileUrl}"/>
+                </a>
+                <a th:href="@{/hospital/product/view(id=${item.id})}">
+                    <p th:text="${item.productName}"/>
+                </a>
+            </li>
+            <span th:if="${#lists.size(session.hotProductList)<5}" th:with="ps=(5-${#lists.size(session.hotProductList)})">
+            <li  th:each="i: ${#numbers.sequence(1, ps)}">
+                <img src="images/home01_r14_c6.jpg" >
+                <p>皮肤黏膜消毒液（立舒保）</p>
+            </li>
+            </span>
+        </ul>
+    </div>
+    <!-- 推荐产品 top end-->
+
+    <!-- product group 1 start-->
+    <div class="hspt_d">
+        <div class="hspt_c_1" id="pg1">
+            <a th:each="item,itemStat : ${productGroup1}"  href="javascript:void(0)" th:onclick="'javascript:changeDefaultType(1,'+${item.id}+')'"  th:id="'ptype_1_'+${item.id}">
+                <span th:text="${item.name}" />
+            </a>
+            <a th:href="'javascript:jumpProductMore(0)'" id="productMore_1" class="more">更多&gt;&gt;</a>
+        </div>
+        <div class="hspt_d_1">
+            <div class="hspt_d_1_1">
+                <div class="hspt_d_1_1_1">
+                    <a th:href="${adGroup2[0].adUrl}">
+                        <img th:src="${fileServer}+${adGroup2[0].picPath}">
+                    </a>
+                </div>
+                <div class="hspt_d_1_1_2">
+                    <a th:href="${adGroup2[1].adUrl}">
+                        <img th:src="${fileServer}+${adGroup2[1].picPath}">
+                    </a>
+                </div>
+            </div>
+            <div class="hspt_d_1_2" id="viewGroup1">
+                <!-- product -->
+            </div>
+        </div>
+    </div>
+    <!-- product group 1 end-->
+
+    <!-- product group 2 start-->
+    <div class="hspt_e">
+        <div class="hspt_c_1" id="pg2">
+            <a th:each="item,itemStat : ${productGroup2}" href="javascript:void(0)" th:onclick="'javascript:changeDefaultType(2,'+${item.id}+')'"  th:id="'ptype_2_'+${item.id}">
+                <span th:text="${item.name}" />
+            </a>
+            <a th:href="'javascript:jumpProductMore(0)'" id="productMore_2" class="more">更多&gt;&gt;</a>
+        </div>
+        <div class="hspt_d_1">
+            <div class="hspt_d_1_1">
+                <div class="hspt_d_1_1_1">
+                    <a th:href="${adGroup2[2].adUrl}">
+                        <img th:src="${fileServer}+${adGroup2[2].picPath}">
+                    </a>
+                </div>
+                <div class="hspt_d_1_1_2">
+                    <a th:href="${adGroup2[3].adUrl}">
+                        <img th:src="${fileServer}+${adGroup2[3].picPath}">
+                    </a>
+                </div>
+            </div>
+            <div class="hspt_d_1_2" id="viewGroup2">
+                <!-- product -->
+            </div>
+        </div>
+    </div>
+    <!-- product group 2 end-->
+
+    <!-- ad center 1 start-->
+    <div class="center_b">
+        <a th:href="${adGroup4[0].adUrl}">
+            <img th:src="${fileServer}+${adGroup4[0].picPath}">
+        </a>
+    </div>
+    <!-- ad center 1 end-->
+
+    <!-- product group 3 start-->
+    <div class="hspt_f">
+        <div class="hspt_c_1" id="pg3">
+            <a th:each="item,itemStat : ${productGroup3}" href="javascript:void(0)" th:onclick="'javascript:changeDefaultType(3,'+${item.id}+')'"  th:id="'ptype_3_'+${item.id}">
+                <span th:text="${item.name}" />
+            </a>
+            <a th:href="'javascript:jumpProductMore(0)'" id="productMore_3" class="more">更多&gt;&gt;</a>
+        </div>
+        <div class="hspt_d_1">
+            <div class="hspt_d_1_2" id="viewGroup3">
+                <!-- product -->
+            </div>
+            <div class="hspt_d_1_1">
+                <div class="hspt_d_1_1_1">
+                    <a th:href="${adGroup2[4].adUrl}">
+                        <img th:src="${fileServer}+${adGroup2[4].picPath}">
+                    </a>
+                </div>
+                <div class="hspt_d_1_1_2">
+                    <a th:href="${adGroup2[5].adUrl}">
+                        <img th:src="${fileServer}+${adGroup2[5].picPath}">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- product group 3 end-->
+
+    <!-- product group 4 start-->
+    <div class="hspt_g">
+        <div class="hspt_c_1" id="pg4">
+            <a th:each="item,itemStat : ${productGroup4}" href="javascript:void(0)" th:onclick="'javascript:changeDefaultType(4,'+${item.id}+')'"  th:id="'ptype_4_'+${item.id}">
+                <span th:text="${item.name}" />
+            </a>
+            <a th:href="'javascript:jumpProductMore(0)'" id="productMore_4" class="more">更多&gt;&gt;</a>
+        </div>
+        <div class="hspt_d_1">
+            <div class="hspt_d_1_2" id="viewGroup4">
+                <!-- product -->
+            </div>
+            <div class="hspt_d_1_1">
+                <div class="hspt_d_1_1_1">
+                    <a th:href="${adGroup2[6].adUrl}">
+                        <img th:src="${fileServer}+${adGroup2[6].picPath}">
+                    </a>
+                </div>
+                <div class="hspt_d_1_1_2">
+                    <a th:href="${adGroup2[7].adUrl}">
+                        <img th:src="${fileServer}+${adGroup2[7].picPath}">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- product group 4 end-->
+
+    <!-- ad center 2 start-->
+    <div class="center_b">
+        <a th:href="${adGroup4[1].adUrl}">
+            <img th:src="${fileServer}+${adGroup4[1].picPath}">
+        </a>
+    </div>
+    <!-- ad center 2 end-->
+
+    <!-- product group 5 start-->
+    <div class="hspt_h">
+        <div class="hspt_c_1" id="pg5">
+            <a th:each="item,itemStat : ${productGroup5}" href="javascript:void(0)" th:onclick="'javascript:changeDefaultType(5,'+${item.id}+')'"  th:id="'ptype_5_'+${item.id}">
+                <span th:text="${item.name}" />
+            </a>
+            <a th:href="'javascript:jumpProductMore(0)'" id="productMore_5" class="more">更多&gt;&gt;</a>
+        </div>
+        <div class="hspt_d_1">
+            <div class="hspt_d_1_1">
+                <div class="hspt_d_1_1_1">
+                    <a th:href="${adGroup2[8].adUrl}">
+                        <img th:src="${fileServer}+${adGroup2[8].picPath}">
+                    </a>
+                </div>
+                <div class="hspt_d_1_1_2">
+                    <a th:href="${adGroup2[9].adUrl}">
+                        <img th:src="${fileServer}+${adGroup2[9].picPath}">
+                    </a>
+                </div>
+            </div>
+            <div class="hspt_d_1_2" id="viewGroup5">
+                <!-- product -->
+            </div>
+        </div>
+    </div>
+    <!-- product group 5 end-->
+
+    <!-- product group 6 start-->
+    <div class="hspt_i">
+        <div class="hspt_c_1" id="pg6">
+            <a th:each="item,itemStat : ${productGroup6}" href="javascript:void(0)" th:onclick="'javascript:changeDefaultType(6,'+${item.id}+')'"  th:id="'ptype_6_'+${item.id}">
+                <span th:text="${item.name}" />
+            </a>
+            <a th:href="'javascript:jumpProductMore(0)'" id="productMore_6" class="more">更多&gt;&gt;</a>
+        </div>
+        <div class="hspt_d_1">
+            <div class="hspt_d_1_1">
+                <div class="hspt_d_1_1_1">
+                    <a th:href="${adGroup2[10].adUrl}">
+                        <img th:src="${fileServer}+${adGroup2[10].picPath}">
+                    </a>
+                </div>
+                <div class="hspt_d_1_1_2">
+                    <a th:href="${adGroup2[11].adUrl}">
+                        <img th:src="${fileServer}+${adGroup2[11].picPath}">
+                    </a>
+                </div>
+            </div>
+            <div class="hspt_d_1_2" id="viewGroup6">
+                <!-- product -->
+            </div>
+        </div>
+    </div>
+    <!-- product group 6 end-->
+
+    <!-- 推荐产品 footer start-->
+    <div class="hspt_c" th:if="${#lists.size(session.hotProductList)>5}">
+        <div class="hspt_c_1"><h1>推荐产品</h1></div>
+        <ul>
+            <li th:each="item,itemStat : ${session.hotProductList}" th:if="${itemStat.count}>5">
+                <a th:href="@{/hospital/product/view(id=${item.id})}">
+                    <img style="width: 203px;height: 180px" th:each="pic,picStat : ${item.picList}" th:if="${picStat.count}==1" th:src="${fileServer}+${pic.fileUrl}"/>
+                </a>
+                <a th:href="@{/hospital/product/view(id=${item.id})}">
+                    <p th:text="${item.productName}"/>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- 推荐产品 footer end-->
+</div>
+
+<div th:replace="/hospital/global :: #footer"></div>
+<script th:src="@{/hospital/js/index.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+/*<![CDATA[*/
+
+    $(document).ready(function(){
+        $($("#pg1 a")[3]).trigger("click");
+        $($("#pg2 a")[3]).trigger("click");
+        $($("#pg3 a")[3]).trigger("click");
+        $($("#pg4 a")[3]).trigger("click");
+        $($("#pg5 a")[3]).trigger("click");
+        $($("#pg6 a")[3]).trigger("click");
+    });
+
+    function doLogin() {
+        // console.log($('#loginFm').serializeJSON());
+        // console.log(JSON.stringify($('#loginFm').serializeJSON()));
+
+        if($('#username').val()==''){
+            return
+        }
+
+        if($('#password').val()==''){
+            return
+        }
+
+        var param = {
+            "username":$('#username').val(),
+            "password":$('#password').val()
+        }
+        /**/
+        $.ajax({
+            url: [[@{/hospital/doLogin}]],
+            headers: {
+                Accept: "application/json; charset=utf-8"
+            },
+            type: 'POST',
+            dataType: 'json',
+            data: $('#loginFm').serializeJSON(),
+            success: function(data){
+                if(data.status==200){
+                    location.href=[[@{/hospital/index}]];
+                } else {
+                    $('#username').val("");
+                    $('#password').val("");
+                    alert(data.msg);
+                }
+            }
+        });
+    }
+/*]]>*/
+</script>
+<style>
+    .defType {
+        font-size: 20px;
+        color:#000;
+        margin: 0 10px;
+        display: inline-block;
+        font-weight: bold
+    }
+</style>
+</body>
+</html>

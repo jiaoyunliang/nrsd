@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzCollectionsMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzCollections">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="ORG_ID" jdbcType="DECIMAL" property="orgId" />
+    <result column="CATEGORY" jdbcType="DECIMAL" property="category" />
+    <result column="CATEGORY_ID" jdbcType="DECIMAL" property="categoryId" />
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+    <result column="CREATE_TIME" jdbcType="DATE" property="createTime" />
+  </resultMap>
+
+  <select id="getId" resultType="Long">
+    select BNZ_COLLECTIONS_SEQ.nextval from dual
+  </select>
+
+
+  <select id="queryCollectionProductPage" resultType="com.rsd.domain.BnzProductModel">
+    SELECT
+        p.*,
+        o.ORG_NAME,
+        t.name product_type_name
+    FROM
+        BNZ_PRODUCT p,
+        BNZ_PRODUCT_TYPE t,
+        BNZ_ORG_INFO o,
+        BNZ_COLLECTIONS c
+    WHERE
+        p.IS_DEL = 0
+        AND p.ORG_ID = o.ID
+        AND p.PRODUCT_TYPE_ID = t.ID
+        AND c.CATEGORY_ID = p.ID
+        AND c.CATEGORY = #{model.category}
+        AND c.ORG_ID = #{model.orgId}
+        <if test="model.productName != null and model.productName != ''" >
+          and p.PRODUCT_NAME LIKE '%'||#{model.productName}||'%'
+        </if>
+        ORDER BY c.CREATE_TIME DESC
+  </select>
+
+  <select id="queryCollectionOrgPage" resultType="com.rsd.domain.BnzOrgDetailModel">
+    SELECT
+        o.ORG_NAME,
+        d.*
+    FROM
+        BNZ_ORG_INFO o,
+        BNZ_ORG_DETAIL d,
+        BNZ_COLLECTIONS c
+    WHERE
+        o.ID = d.ORG_ID
+        AND d.ORG_ID = c.CATEGORY_ID
+        AND c.CATEGORY = 3
+        AND c.ORG_ID = #{model.orgId}
+      <if test="model.orgName != null and model.orgName != ''" >
+        AND o.ORG_NAME LIKE '%'||#{model.orgName}||'%'
+      </if>
+    ORDER BY
+        c.CREATE_TIME DESC
+  </select>
+
+  
+</mapper>

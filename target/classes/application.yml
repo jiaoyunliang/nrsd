@@ -1,0 +1,27 @@
+#spring.profiles.active: dev 读取配置文件为 application-dev.yml 的配置文件,目前用于测试环境和生产环境配置分类
+spring:
+  profiles:
+    active: dev
+
+  thymeleaf:
+    prefix: classpath:/templates
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    contents-type: text/html
+    cache: false
+    cache-period: 0
+
+  aop:
+    auto: true
+    proxy-target-class: false
+
+  messages:
+    basename: messages
+    encoding: utf-8
+    cache-seconds: 60
+
+mybatis:
+  typeAliasesPackage: com.rsd.domain
+  mapperLocations: classpath:mapper/*.xml
+  configLocation: classpath:/mybatis-config.xml

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/hospital/fragments/common :: #common"></head>
+<body>
+<div class="hsptAll">
+  <div th:replace="/hospital/global :: #header"></div>
+  <div th:replace="/hospital/global :: #navbar"></div>
+  <div class="center">
+    <input type="hidden" id="quaType" th:value="${quaType}">
+    <input type="hidden" id="inputOrgName" th:value="${orgName}">
+    <input type="hidden" id="inputQuaCode" th:value="${quaCode}">
+    <div class="list_b_1">
+      <div class="list_b_1_1">
+        <select id="stype">
+        <option value="2">产品资质</option>
+        <option value="1">企业资质</option>
+      </select>
+        <select id="category">
+          <option value="">全部类别</option>
+        </select>
+        <input type="text" id="orgName"><button id="searchQua" onclick="javascript:searchQua();">搜索</button></div>
+    </div>
+    <div class="hspt_wf">
+      <ul class="clearfix picture">
+      </ul>
+      <div id="load">can you see me?</div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+  /*<![CDATA[*/
+
+  $(document).ready(function(){
+
+    var waterFall=new WaterFall($("#load"),10,1).listenerScroll();
+
+    $("body").keydown(function() {
+      if (event.keyCode == "13") {
+        $('#searchOrg').click();
+      }
+    });
+    var quaType=$('#quaType').val();
+    $("#stype").val(quaType);
+      if(quaType==1) {//企业资质
+        $("#category").empty();
+        $("#category").append("<option value=''>全部分类</option>");
+        $("#category").append("<option value='1'>营业执照</option>");
+        $("#category").append("<option value='2'>生产许可证</option>");
+        $("#category").append("<option value='3'>经营许可证</option>");
+        $("#category").append("<option value='4'>生产企业质量体系认证</option>");
+      }else if(quaType==2){//产品资质
+        $("#category").empty();
+        $("#category").append("<option value=''>全部分类</option>");
+        $("#category").append("<option value='1'>注册证</option>");
+        $("#category").append("<option value='2'>备案凭证</option>");
+        $("#category").append("<option value='3'>专利证书</option>");
+        $("#category").append("<option value='4'>CE认证</option>");
+        $("#category").append("<option value='5'>FDA认证</option>");
+        $("#category").append("<option value='6'>说明书</option>");
+        $("#category").append("<option value='7'>购销合同</option>");
+        $("#category").append("<option value='8'>授权书</option>");
+        $("#category").append("<option value='9'>其他</option>");
+      }
+    $("#category").change(function(){
+        searchQua();
+    });
+    $("#stype").change(function(){
+      searchQua();
+    });
+
+    var quaCode=$("#inputQuaCode").val();
+    $("#category").val(quaCode);
+    var orgName=$("#inputOrgName").val();
+    $("#orgName").val(orgName);
+  });
+
+  function searchQua() {
+      var quaType = $("#stype").val();
+      var orgName=$("#orgName").val();
+      var category=$("#category").val();
+      var url = "";
+      url = this.getCtx() + "/hospital/qua/searchallqua?orgName="+orgName+"&quaCode="+category+"&quaType="+quaType;
+      location.href=url;
+  }
+  /*]]>*/
+</script>
+<script type="text/javascript" th:src="@{/hospital/js/qua/allproductqua.js}"></script>
+<style>
+  .hspt_wf {
+    width: 1200px;
+    margin-top: .875rem;
+  }
+
+  .hspt_wf ul li:hover{box-shadow:0px 0px 20px rgba(0,0,0,0.2);}
+
+
+  .clearfix::after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+  .picture {
+    position: relative;
+    /* border: 1px solid gray; */
+  }
+  .picture .item {
+    position: absolute;
+    padding: 0 0 10px 0;
+    width: 280px;
+    margin: 10px;
+    border: 1px solid #dfdfdf;
+    background: #fff;
+    opacity: 0;
+    transition: all .8s;
+  }
+
+  .item img {
+    width: 100%;
+  }
+
+  .item p {
+    line-height: 24px;
+    height: 58px;
+    overflow: hidden;
+    padding: 10px 10px 0px;
+    color: #151515;
+    text-align: center;
+  }
+
+  #load {
+    visibility: hidden;
+  }
+</style>
+</body>
+</html>

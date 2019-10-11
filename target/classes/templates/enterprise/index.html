@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:include="/enterprise/global :: #common"></head>
+<body>
+<div th:replace="/enterprise/global :: #indexHeader"></div>
+<div class="center">
+    <div class="center_a">
+        <div class="center_a_1">
+            <div class="center_a_1_1">
+                <div class="gg_title">
+                    <h2>行业动态</h2>
+                    <a th:href="@{/enterprise/news/list?newsType=2}" class="">更多&gt;&gt;</a>
+                </div>
+                <ul>
+                    <li th:each="item : ${news2}">
+                        <a th:href="@{/enterprise/news/detail(id=${item.id})}" th:text="${item.title}" th:if="${item.isRed==1}" style="color: #f56c6c">
+                        </a>
+                        <a th:href="@{/enterprise/news/detail(id=${item.id})}" th:text="${item.title}" th:if="${item.isRed!=1}">
+                        </a>
+                        <!--<img src="images/icon_new.png" width="27" height="14"/>-->
+                    </li>
+                </ul>
+            </div>
+            <div class="center_a_1_1">
+                <div class="gg_title">
+                    <h2>资料下载</h2>
+                    <a th:href="@{/enterprise/news/list?newsType=1}" class="">更多&gt;&gt;</a>
+                </div>
+                <ul>
+                    <li th:each="item : ${news1}">
+                        <a th:href="@{/enterprise/news/detail(id=${item.id})}" th:text="${item.title}" th:if="${item.isRed==1}" style="color: #f56c6c"></a>
+                        <a th:href="@{/enterprise/news/detail(id=${item.id})}" th:text="${item.title}" th:if="${item.isRed!=1}"></a>
+                        <!--<img src="images/icon_new.png" width="27" height="14"/>-->
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="center_a_2">
+            <div class="center_a_1_1">
+                <div class="gg_title">
+                    <h2>项目公告</h2>
+                    <a th:href="@{/enterprise/news/list?newsType=3}" class="">更多&gt;&gt;</a>
+                </div>
+                <h1><a th:href="@{/enterprise/news/detail(id=${news3[0].id})}" th:text="${news3[0].title.substring(0,40)+'..'}">阿扎胞苷等17种抗癌药进医保平均降幅56.7%，最高降幅达71%</a></h1>
+                <!--<p th:text="${#strings.replace(news3[0].content,'/<[^>]+>/g','')}">种临床必需、疗效确切、需求迫切的抗癌药大幅降价，平均降幅56.7%，最高达71%。10日，国家医疗保障局印发《关于将17种药品纳入国家基本医疗保险、工伤保险和生育保险药品目录乙类范围的通知》，将阿扎胞苷等17种抗癌药纳入医保报销目录。广州医科大学附属肿瘤医院肿瘤内科主任金川表示，将1</p>-->
+                <ul>
+                    <li th:each="item,itemStat : ${news3}" th:if="${itemStat.count}>1">
+                        <font>重要<b>|</b></font>
+                        <a th:href="@{/enterprise/news/detail(id=${item.id})}" th:text="${item.title}" th:if="${item.isRed==1}" style="color: #f56c6c"></a>
+                        <a th:href="@{/enterprise/news/detail(id=${item.id})}" th:text="${item.title}" th:if="${item.isRed!=1}"></a>
+                        <!--<img src="images/icon_new.png" width="27" height="14"/>-->
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="center_a_3">
+            <div class="login_all" sec:authorize="isAnonymous()">
+                <div class="login_title">登录</div>
+                    <form id="loginFm" th:action="@{/enterprise/doLogin}" method="post">
+                    <div class="login_from">
+                        <div class="login_line">用户名：
+                            <input type="text" name="username" id="username">
+                        </div>
+                        <div class="login_line">密　码：
+                            <input type="password" name="password" id="password">
+                        </div>
+                        <div class="login_line">
+                            <!--<a href="#">忘记密码</a>-->
+                        </div>
+                        <div class="login_line">
+                            <button type="button" onclick="doLogin()">登　　录</button>
+                        </div>
+                    </div>
+                    </form>
+                <div class="login_buttom" id="accountApply">
+                    <template>
+                        <div>
+                            高效，便捷的管理服务<a @click="handelOpenApplyDialog()">马上加入</a>
+                            <account-apply-dialog :dialog-title="dialogTitle" :show-dialog.sync="isShowDialog"></account-apply-dialog>
+                        </div>
+                    </template>
+
+                    <script type="x-template" id="account-apply-template">
+                        <div>
+                            <el-dialog
+                                    :top="dialogTop"
+                                    :title="dialogTitle"
+                                    :show-close="false"
+                                    :close-on-click-modal="false"
+                                    :visible="showDialog"
+                                    @close="dialogClosed"
+                                    width="50%"
+                            >
+                                <el-form
+                                        :model="formData"
+                                        label-width="100px"
+                                        ref="ruleForm"
+                                        class="demo-form"
+                                >
+                                    <el-form-item
+                                            label="企业名称:"
+                                            prop="name"
+                                            :rules="[{ required: true, message: '请输入企业名称', trigger: 'blur' },
+                                            { max: 50, message: '长度 50 个字符', trigger: 'blur' }]">
+                                        <el-input v-model="formData.name" style="width: 70%"/>
+                                    </el-form-item>
+                                    <el-form-item
+                                            label="联系人:"
+                                            prop="contact"
+                                            :rules="[{ required: true, message: '请输入联系人', trigger: 'blur' },
+                                            { max: 50, message: '长度 50 个字符', trigger: 'blur' }]">
+                                        <el-input v-model="formData.contact" style="width: 70%"/>
+                                    </el-form-item>
+                                    <el-form-item
+                                            label="联系电话:"
+                                            prop="mobile"
+                                            :rules="[{ required: true, message: '请输入联系电话', trigger: 'blur' },
+                                            { max: 20, message: '长度 20 个字符', trigger: 'blur' }]">
+                                        <el-input v-model="formData.mobile" style="width: 70%"/>
+                                    </el-form-item>
+                                    <el-form-item
+                                            label="企业类型:"
+                                            prop="enterpriseType"
+                                            :rules="[{ required: true, message: '请选择企业类型', trigger: 'change' }]">
+                                        <el-radio v-model="formData.enterpriseType" :label="0">生产企业</el-radio>
+                                        <el-radio v-model="formData.enterpriseType" :label="1">经销企业</el-radio>
+                                    </el-form-item>
+                                    <el-form-item
+                                            label="市场范围:"
+                                            prop="remark"
+                                            :rules="[{ required: true, message: '请输入关注市场范围', trigger: 'blur' },
+                                            { max: 200, message: '长度 200 个字符', trigger: 'blur' }]">
+                                        <el-input type="textarea" v-model="formData.remark" style="width: 70%"/>
+                                    </el-form-item>
+
+                                </el-form>
+                                <div slot="footer" class="dialog-footer">
+                                    <el-button type="primary" @click="onSubmit">提交</el-button>
+                                    <el-button @click="dialogClosed">关闭</el-button>
+                                </div>
+                            </el-dialog>
+                        </div>
+                    </script>
+                </div>
+                <link rel="stylesheet" th:href="@{/lib/element-ui/lib/theme-chalk/index.css}">
+                <script type="text/javascript" th:src="@{/lib/vue/vue.js}"></script>
+                <script type="text/javascript" th:src="@{/lib/element-ui/lib/index.js}"></script>
+                <script type="text/javascript" th:src="@{/lib/axios/dist/axios.js}"></script>
+                <script type="text/javascript" th:src="@{/enterprise/js/accountApply.js}"></script>
+            </div>
+            <div class="login_all" th:if="${#authorization.expression('hasRole(''ROLE_ENTERPRISE'')')}">
+                <div class="login_title">您好，乐普医疗</div>
+                <div class="login_from">
+                    <ul>
+                        <li th:if="${#auth.checkAuthCode('3','001003')}"><a th:href="@{'/enterprise/sysMsg/index?c=001003'}"><img th:src="@{/enterprise/images/icon_smg.png}" src="images/icon_smg.png">系统消息</a></li>
+                        <!--<li><a href="#"><img th:src="@{/enterprise/images/icon_computer.png}" src="images/icon_computer.png">项目管理</a></li>-->
+                        <li th:if="${#auth.checkAuthCode('3','001004')}"><a th:href="@{'/enterprise/qua/hospitallist?c=001004'}"><img th:src="@{/enterprise/images/icon_folder.png}" src="images/icon_folder.png">产品资质</a></li>
+                        <li th:if="${#auth.checkAuthCode('3','001002')}"><a th:href="@{'/enterprise/detail?c=001002'}"><img th:src="@{/enterprise/images/icon_star.png}" src="images/icon_star.png">企业介绍</a></li>
+                        <li th:if="${#auth.checkAuthCode('3','001005')}"><a th:href="@{'/enterprise/qua/hospitallist?c=001005'}"><img th:src="@{/enterprise/images/icon_building.png}" src="images/icon_building.png">企业资质</a></li>
+                        <li th:if="${#auth.checkAuthCode('3','001001')}"><a th:href="@{'/enterprise/product/list?c=001001'}"><img th:src="@{/enterprise/images/icon_box.png}" src="images/icon_box.png">产品管理</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ad 通栏 -->
+    <div class="center_b" id="index_banner" style="position: relative;">
+        <div class="tempWrap" style="overflow:hidden; position:relative;">
+            <ul id="banmain" style="width: 6020px; position: relative; overflow: hidden; padding: 0px; margin: 0px; transition-duration: 500ms; transform: translate(-4300px, 0px) translateZ(0px);">
+                <li style="display: table-cell; vertical-align: top; width: 860px;" th:each="item : ${adGroup1}">
+                    <a th:href="${item.adUrl}">
+                        <img th:src="${fileServer}+${item.picPath}" style="width: 1200px;height: 152px"/>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <ol id="bantit"><li class="">1</li><li class="">2</li><li class="">3</li><li class="">4</li><li class="on">5</li></ol>
+        <script type="text/javascript">
+            TouchSlide({
+                slideCell:"#index_banner",
+                titCell:"#bantit",
+                mainCell:"#banmain",
+                effect:"leftLoop",
+                autoPage:true,
+                autoPlay:true,
+                interTime:5000,
+                delayTime:500
+            });
+        </script>
+    </div>
+    <!-- ad 通栏 end-->
+
+    <!-- ad org -->
+    <div class="center_c">
+        <ul>
+            <li th:each="item : ${adGroup2}">
+                <a th:href="${item.adUrl}">
+                    <img th:src="${fileServer}+${item.picPath}"/>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- ad org end -->
+
+    <!-- 推荐产品 -->
+    <div class="center_d">
+        <ul>
+            <li th:each="item,itemStat : ${session.hotProductList}" th:if="${itemStat.count}<=5">
+                <a th:href="@{/enterprise/product/view(id=${item.id})}">
+                    <img style="width: 203px;height: 180px" th:each="pic,picStat : ${item.picList}" th:if="${picStat.count}==1" th:src="${fileServer}+${pic.fileUrl}"/>
+                </a>
+                <a th:href="@{/enterprise/product/view(id=${item.id})}">
+                    <p th:text="${item.productName}"/>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- 推荐产品 end -->
+
+    <!-- 排行榜 -->
+    <div class="center_e">
+        <div class="center_e_1">
+            <div class="center_e_1_1"><span>好评</span>排行榜</div>
+            <div class="center_e_1_2">
+                <ul>
+                    <li th:each="item,itemStat : ${session.indexEnterpriseList}" th:utext="${'<span>'+itemStat.count+'</span>'+item.orgName}">
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="center_e_1">
+            <div class="center_e_1_1"><span>生产企业</span>排行榜</div>
+            <div class="center_e_1_2">
+                <ul>
+                    <li th:each="item,itemStat : ${session.indexEnterpriseList0}" th:utext="${'<span>'+itemStat.count+'</span>'+item.orgName}">
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="center_e_1">
+            <div class="center_e_1_1"><span>经销企业</span>排行榜</div>
+            <div class="center_e_1_2">
+                <ul>
+                    <li th:each="item,itemStat : ${session.indexEnterpriseList1}" th:utext="${'<span>'+itemStat.count+'</span>'+item.orgName}">
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- 排行榜 end-->
+</div>
+<div th:replace="/enterprise/global :: #footer"></div>
+<script type="text/javascript" th:inline="javascript">
+/*<![CDATA[*/
+
+function doLogin() {
+    // console.log($('#loginFm').serializeJSON());
+    // console.log(JSON.stringify($('#loginFm').serializeJSON()));
+
+    if($('#username').val()==''){
+        return
+    }
+
+    if($('#password').val()==''){
+        return
+    }
+
+    var param = {
+        "username":$('#username').val(),
+        "password":$('#password').val()
+    }
+    /**/
+    $.ajax({
+        url: getCtx()+'/enterprise/doLogin',
+    headers: {
+        Accept: "application/json; charset=utf-8"
+    },
+    type: 'POST',
+        dataType: 'json',
+        data: $('#loginFm').serializeJSON(),
+        success: function(data){
+        if(data.status==200){
+            location.href=getCtx()+'/enterprise/index';
+        } else {
+            $('#username').val("");
+            $('#password').val("");
+            alert(data.msg);
+        }
+    }
+});
+}
+/*]]>*/
+</script>
+
+<style>
+    .demo-form {
+        text-align: left;
+    }
+
+
+</style>
+</body>
+</html>

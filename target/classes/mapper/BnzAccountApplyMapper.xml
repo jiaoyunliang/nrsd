@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzAccountApplyMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzAccountApply">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="ENTERPRISE_TYPE" jdbcType="DECIMAL" property="enterpriseType" />
+    <result column="CONTACT" jdbcType="VARCHAR" property="contact" />
+    <result column="MOBILE" jdbcType="VARCHAR" property="mobile" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="IS_DEL" jdbcType="DECIMAL" property="isDel" />
+    <result column="IS_READ" jdbcType="DECIMAL" property="isRead" />
+    <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+
+  <select id="getId" resultType="Long">
+    select BNZ_ACCOUNT_APPLY_SEQ.nextval from dual
+  </select>
+
+  <select id="queryAccountApply" resultMap="BaseResultMap" >
+    SELECT
+        t.*
+    FROM
+        BNZ_ACCOUNT_APPLY t
+    WHERE
+      1=1
+    <if test="model.name != null and model.name != ''" >
+      and t.NAME LIKE '%'||#{model.name}||'%'
+    </if>
+    ORDER BY
+        t.IS_READ ASC,
+        t.CREATE_TIME DESC
+  </select>
+
+</mapper>

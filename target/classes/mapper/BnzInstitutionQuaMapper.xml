@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzInstitutionQuaMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzInstitutionQuaModel">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id"/>
+    <result column="ORG_INFO_ID" jdbcType="DECIMAL" property="orgInfoId"/>
+    <result column="QUA_NAME" jdbcType="VARCHAR" property="quaName"/>
+    <result column="ORG_NAME" jdbcType="VARCHAR" property="orgName"/>
+    <result column="VALIDITY_DATE" jdbcType="DATE" property="validityDate"/>
+    <result column="QUA_TYPE" jdbcType="DECIMAL" property="quaType"/>
+    <result column="dict_category_id" jdbcType="VARCHAR" property="dictCategoryId"/>
+    <result column="QUA_TYPE_NAME" jdbcType="VARCHAR" property="quaTypeName"/>
+    <result column="category" jdbcType="DECIMAL" property="category"/>
+    <result column="validState" jdbcType="VARCHAR" property="validState"/>
+    <result column="SUM" jdbcType="DECIMAL" property="sum"/>
+    <result column="IS_SHOW" jdbcType="DECIMAL" property="isShow"/>
+    <result column="TYPE_FLAG" jdbcType="DECIMAL" property="typeFlag"/>
+    <result column="IS_DEL" jdbcType="DECIMAL" property="isDel"/>
+    <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser"/>
+    <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime"/>
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser"/>
+    <result column="CREATE_TIME" jdbcType="DATE" property="createTime"/>
+    <!--<association property="rsdDictInfo" column="{dict_id=QUA_TYPE,dict_category_id=dict_category_id}" fetchType="eager"
+                 select="com.rsd.mapper.BnzDictInfoMapper.getDetailDictInfo">
+    </association>-->
+    <collection property="bnzFileRelation" column="{category=category,categoryId=ID}"
+                javaType="ArrayList" ofType="com.rsd.domain.BnzFileRelation" fetchType="eager"
+                select="com.rsd.mapper.BnzFileRelationMapper.searchFileByCategoryId"></collection>
+  </resultMap>
+  <resultMap id="orgInfoResultMap" type="com.rsd.domain.BnzInstitutionQuaModel">
+    <id column="ID" jdbcType="DECIMAL" property="id"/>
+    <result column="ORG_INFO_ID" jdbcType="DECIMAL" property="orgInfoId"/>
+    <result column="ORG_INFO_NAME" jdbcType="VARCHAR" property="orgInfoName"/>
+  </resultMap>
+  <sql id="is_del">and is_del=0</sql>
+  <sql
+    id="base_sql">id, org_info_id, qua_name,org_name,validity_date, qua_type, is_show,type_flag,is_del, update_user, update_time, create_user, create_time</sql>
+  <select id="searchBnzInstitutionQuaList" resultType="com.rsd.domain.BnzInstitutionQuaModel">
+    SELECT (select dict_name from bnz_dict_info where dict_id=a.qua_type and dict_category_id=2)as qua_name, count(*) AS
+    sum, qua_type,
+    '2' AS dict_category_id, max(update_time) AS update_time,case when add_months(sysdate,3)>min(validity_date) then '1'
+    else '0' end as validstate，
+    #{model.orgInfoId} AS orgInfoId FROM bnz_institution_qua a WHERE a.org_info_id = #{model.orgInfoId}
+    AND a.type_flag = #{model.typeFlag}  <include refid="is_del"></include>  GROUP BY a.qua_type
+  </select>
+  <insert id="insertModel" keyProperty="id" useGeneratedKeys="false">
+    <selectKey resultType="Long" keyProperty="model.id" order="BEFORE">
+      select BNZ_FILE_RELATION_SEQUENCE.nextval as id from dual
+    </selectKey>
+    insert into bnz_institution_qua(id, org_info_id,qua_name,org_name,validity_date,
+    qua_type,is_show,type_flag,is_del,update_user,update_time,create_user, create_time)
+    values(#{model.id},
+    #{model.orgInfoId},
+    #{model.quaName,jdbcType=VARCHAR},
+    #{model.orgName},
+    #{model.validityDate},
+    #{model.quaType},
+    #{model.isShow},
+    #{model.typeFlag},
+    #{model.isDel},
+    #{model.updateUser},
+    sysdate,
+    #{model.createUser},sysdate)
+  </insert>
+  <select id="searchBnzInstitutionQuaDetailList" resultMap="BaseResultMap">
+    select id, org_info_id,org_name,qua_name,'2' as dict_category_id,1 as category,validity_date, qua_type,(select
+    dict_name from bnz_dict_info where dict_category_id=2 and dict_id=qua_type)as qua_type_name,is_show,
+    is_del,case when add_months(sysdate,3)>validity_date then '1' else '0' end as validstate，
+    update_user, update_time,
+    create_user, create_time from bnz_institution_qua where
+    type_flag=#{model.typeFlag}
+    <if test="model.orgInfoId!=null and model.orgInfoId!=''">
+      and org_info_id=#{model.orgInfoId}
+    </if>
+    <if test="(model.orgName != null and model.orgName!='') or (model.quaName != null and model.quaName!='')">
+      and (org_name like concat('%',concat(#{model.orgName},'%')) or qua_name like
+      concat('%',concat(#{model.orgName},'%')))
+    </if>
+    <if test="model.quaType!=null and model.quaType!=''">
+      and qua_type=#{model.quaType}
+    </if>
+    <include refid="is_del"></include>
+  </select>
+  <select id="searchBnzInstitutionOrgInfo" resultMap="BaseResultMap">
+    select id, org_info_id, qua_name,validity_date, qua_type, is_show, is_del, update_user, update_time,
+    create_user, create_time from bnz_institution_qua where
+    <include
+      refid="is_del"></include>
+  </select>
+  <select id="searchBnzInstitutionList" resultMap="orgInfoResultMap">
+    select a.org_info_id, b.org_name as org_info_name
+    from bnz_institution_qua a
+    inner join bnz_org_info b on a.org_info_id = b.id
+    where b.sys_id = #{model.orgInfoType} and a.type_flag=#{model.typeFlag}
+    <if test="model.isShow!=null and model.isShow!=''">
+      and a.is_show=#{model.isShow}
+    </if>
+    <if test="model.quaType!=null and model.quaType!=''">
+      and a.qua_type=#{model.quaType}
+    </if>
+    <if test="model.orgName != null and model.orgName != ''">
+      and b.org_name like concat('%',concat(#{model.orgName},'%'))
+    </if>
+    <if test="model.quaName!= null and model.quaName!=''">
+      and b.qua_name like concat('%',concat(#{model.quaName},'%'))
+    </if>
+    group by a.org_info_id, b.org_name
+  </select>
+
+  <select id="searchPackRecrodInstitutionList" resultMap="BaseResultMap">
+    select id, org_info_id, qua_name,validity_date, qua_type, is_show, is_del, update_user, update_time,1 as category,
+    create_user, create_time from bnz_institution_qua where
+    org_info_id=#{model.orgInfoId} and type_flag=#{model.typeFlag}
+    <include
+      refid="is_del"></include>
+  </select>
+
+  <update id="deleteInstitutionQua">
+    update bnz_institution_qua
+    set is_del
+                   = '1',
+        update_user=#{model.updateUser},
+        update_time=sysdate
+    where id = #{model.id}
+  </update>
+  <update id="updateInstitutionQua">
+    update bnz_institution_qua
+    set qua_name=#{model.quaName},
+        org_name=#{model.orgName},
+        validity_date=#{model.validityDate},
+        update_user=#{model.updateUser},
+        update_time=sysdate
+    where id = #{model.id}
+  </update>
+  <select id="searchBnzInstitutionQuaExprieList" resultType="com.rsd.domain.BnzInstitutionQuaModel">
+    select a.id, a.org_info_id,(select
+    dict_name from bnz_dict_info where dict_category_id=2 and dict_id=a.qua_type)as qua_type_name
+    from bnz_institution_qua a
+    where to_char(add_months(sysdate, 6), 'yyyy-MM-dd') = to_char(a.validity_date, 'yyyy-MM-dd')
+    or to_char(add_months(sysdate, 3), 'yyyy-MM-dd') = to_char(a.validity_date, 'yyyy-MM-dd')
+    or to_char(sysdate + 7, 'yyyy-MM-dd') = to_char(a.validity_date, 'yyyy-MM-dd')
+    and a.type_flag=1
+    <include
+      refid="is_del"></include>
+  </select>
+</mapper>

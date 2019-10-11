@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzAdMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzAd">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="TYPE" jdbcType="DECIMAL" property="type" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="SEQ" jdbcType="DECIMAL" property="seq" />
+    <result column="SYS_ID" jdbcType="DECIMAL" property="sysId" />
+    <result column="PIC_PATH" jdbcType="VARCHAR" property="picPath" />
+    <result column="AD_URL" jdbcType="VARCHAR" property="adUrl" />
+    <result column="STATUS" jdbcType="DECIMAL" property="status" />
+  </resultMap>
+
+
+  <select id="queryAdList" resultType="com.rsd.domain.BnzAd">
+    SELECT
+        *
+    FROM
+        bNz_Ad t
+    WHERE
+        t.sys_id = #{model.sysId}
+      <choose>
+          <when test="model.type !=null and model.type == 1">
+              AND t.TYPE = #{model.type}
+          </when>
+          <when test="model.type !=null and model.type == 2">
+              AND t.TYPE = #{model.type}
+          </when>
+          <when test="model.type !=null and model.type == 3">
+              AND t.TYPE = #{model.type}
+          </when>
+          <when test="model.type !=null and model.type == 100">
+              AND t.TYPE in (1,2,4,5)
+          </when>
+      </choose>
+      <if test="test=model.status !=null">
+          AND t.STATUS = #{model.status}
+      </if>
+    ORDER BY
+        t.TYPE ASC,
+        t.seq ASC,
+        t.status ASC
+  </select>
+
+</mapper>
