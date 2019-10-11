@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/enterprise/global :: #common"></head>
+<body>
+<div class="hsptAll">
+    <div th:replace="/enterprise/global :: #header"></div>
+    <div th:replace="/enterprise/global :: #navbar"></div>
+    <div class="center" th:attr="file_server=${fileServer}">
+        <div class="list_a">
+            <a th:href="@{/enterprise/index}"> 首页 </a>&gt;
+            企业介绍</div>
+        <div id="detail" class="list_c" >
+            <template>
+                <div>
+                    <el-form ref="form" :model="form" label-width="150px">
+                        <el-form-item
+                                prop="contact"
+                                label="联系人:"
+                                :rules="[
+                                { required: true, message: '请输入产品名称', trigger: 'blur' },
+                                { max: 50, message: '长度 50 个字符', trigger: 'blur' }
+                            ]">
+                            <el-input v-model="form.contact" style="width: 400px"></el-input>
+                        </el-form-item>
+                        <el-form-item
+                                label="联系方式:"
+                                prop="contactInfo"
+                                :rules="[
+                                { required: true, message: '请输入联系方式', trigger: 'blur' },
+                                { max: 50, message: '长度 50 个字符', trigger: 'blur' }]">
+                            <el-input v-model="form.contactInfo" style="width: 400px"></el-input>
+                        </el-form-item>
+                        <el-form-item
+                                label="网址:"
+                                prop="website"
+                                :rules="[
+                            { required: true, message: '请输入网址', trigger: 'blur' },
+                            { max: 50, message: '长度 50 个字符', trigger: 'blur' }]">
+                            <el-input v-model="form.website" style="width: 400px"></el-input>
+                        </el-form-item>
+                        <el-form-item
+                                label="品牌类型:"
+                                prop="brandType"
+                                :rules="[
+                            { required: true, message: '请选择品牌类型', trigger: 'blur' }]">
+                            <el-radio v-model="form.brandType" :label="1">自主品牌</el-radio>
+                            <el-radio v-model="form.brandType" :label="2">代理品牌</el-radio>
+                        </el-form-item>
+                        <el-form-item label="企业图片:">
+                            <el-upload
+                                    class="upload-demo"
+                                    ref="elUploadOrg"
+                                    :action="uploadPath"
+                                    :http-request="fileUpload"
+                                    accept="image/jpeg,image/gif,image/png"
+                                    :multiple="false"
+                                    :before-upload="handleBeforeUploadOrg"
+                                    :on-exceed="handleExceedOrg"
+                                    :before-remove="beforeRemoveOrg"
+                                    :on-success="handleSuccessOrg"
+                                    :file-list="orgPic"
+                                    list-type="picture"
+                                    :limit="1"
+                            >
+                                <el-button size="small" type="primary">点击上传</el-button>
+                                <div slot="tip" class="el-upload__tip">
+                                    只能上传jpg/png/gif文件，且不超过1M
+                                </div>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item label="品牌logo:">
+                            <el-upload
+                                    class="upload-demo"
+                                    ref="elUploadLogo"
+                                    :action="uploadPath"
+                                    :http-request="fileUpload"
+                                    accept="image/jpeg,image/gif,image/png"
+                                    :multiple="false"
+                                    :before-upload="handleBeforeUpload"
+                                    :on-exceed="handleExceed"
+                                    :on-preview="handlePreview"
+                                    :before-remove="beforeRemove"
+                                    :on-success="handleSuccess"
+                                    :file-list="brandLogo"
+                                    list-type="picture"
+                                    :limit="10"
+                            >
+                                <el-button size="small" type="primary">点击上传</el-button>
+                                <div slot="tip" class="el-upload__tip">
+                                    只能上传jpg/png/gif文件，且不超过1M
+                                </div>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item
+                                label="企业介绍:"
+                                prop="remark"
+                                :rules="[
+                            { required: true, message: '请填写企业介绍', trigger: 'blur' },
+                            { max: 500, message: '长度 500 个字符', trigger: 'blur' }]">
+                            <el-input
+                                    type="textarea"
+                                    :rows="2"
+                                    placeholder="请输入内容"
+                                    v-model="form.remark">
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item style="text-align: center">
+                            <el-button type="primary" @click="onSubmit">保存</el-button>
+                            <el-button @click="back">返回</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+            </template>
+        </div>
+    </div>
+    <div th:replace="/enterprise/global :: #footer"></div>
+</div>
+<script type="text/javascript" th:src="@{/lib/moment/moment.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/lib/element-ui/lib/index.js}"></script>
+<script type="text/javascript" th:src="@{/lib/axios/dist/axios.js}"></script>
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
+<script type="text/javascript" th:src="@{/enterprise/js/detail.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function(){
+    });
+
+    /*]]>*/
+</script>
+<style>
+    .el-upload-list{
+        width: 400px;
+    }
+</style>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head th:include="/hospital/fragments/common :: #common"></head>
+<body>
+<div id="hostitallist">
+  <template>
+    <div>
+      <el-row>
+        <el-col :span="24">
+          <el-table
+            :data="dataList"
+            style="width: 100%"
+            stripe
+            v-loading="loading"
+          >
+            <el-table-column
+              type="index"
+              :index="typeIndex"
+              label="序号"
+              width="50"
+            ></el-table-column>
+            <el-table-column
+              prop="rsdOrgInfo.orgName"
+              label="医院"
+            ></el-table-column>
+            <el-table-column
+              prop="projectName"
+              label="项目名称 "
+            ></el-table-column>
+            <el-table-column label="项目时间">
+              <template slot-scope="scope">
+                {{ scope.row.projectTime | dateFormatMonth }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="150">
+              <template slot-scope="scope">
+                <el-button
+                  type="primary"
+                  icon="el-icon-delete"
+                  @click="handleDeleteProject(scope.row)"
+                ></el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-pagination
+            v-bind:current-page="pageInfo.current"
+            v-bind:page-size="pageInfo.size"
+            :total="pageInfo.total"
+            layout="total,sizes,prev,pager,next,jumper"
+            v-bind:page-sizes="[10, 50, 100]"
+            v-on:size-change="changePageSize"
+            v-on:current-change="pageIndexChange">
+          </el-pagination>
+        </el-col>
+      </el-row>
+    </div>
+  </template>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/js/jquery-1.9.1.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.serializejson.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/Touch.js}"></script>
+<script type="text/javascript" th:src="@{/lib/vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/lib/element-ui/lib/index.js}"></script>
+<script type="text/javascript" th:src="@{/lib/axios/dist/axios.js}"></script>
+<script type="text/javascript" th:src="@{/lib/vue/vuex.js}"></script>
+<script type="text/javascript" th:src="@{/hospital/js/project/list.js}"></script>
+</html>
+
+

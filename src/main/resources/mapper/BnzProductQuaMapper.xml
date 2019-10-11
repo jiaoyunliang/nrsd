@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzProductQuaMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzProductQuaModel">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id"/>
+    <result column="ORG_INFO_ID" jdbcType="DECIMAL" property="orgInfoId"/>
+    <result column="QUA_CODE" jdbcType="DECIMAL" property="quaCode"/>
+    <result column="QUA_CODE_NAME" jdbcType="VARCHAR" property="quaCodeName"/>
+    <result column="QUA_VALUE" jdbcType="VARCHAR" property="quaValue"/>
+    <result column="ORG_NAME" jdbcType="VARCHAR" property="orgName"/>
+    <result column="TYPE_FLAG" jdbcType="DECIMAL" property="typeFlag"/>
+    <result column="SUM" jdbcType="DECIMAL" property="sum"/>
+    <result column="QUA_TYPE" jdbcType="VARCHAR" property="quaType"/>
+    <result column="IS_SHOW" jdbcType="DECIMAL" property="isShow"/>
+    <result column="IS_DEL" jdbcType="DECIMAL" property="isDel"/>
+    <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser"/>
+    <result column="VALID_DATE" jdbcType="DATE" property="validDate"/>
+    <result column="validState" jdbcType="VARCHAR" property="validState"/>
+    <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime"/>
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser"/>
+    <result column="CREATE_TIME" jdbcType="DATE" property="createTime"/>
+  </resultMap>
+  <sql id="is_del">and is_del=0</sql>
+  <sql id="base_sql">
+    id, org_info_id,org_name,qua_code, qua_value, qua_type, valid_date, is_show,type_flag, is_del, update_user, update_time, create_user, create_time
+  </sql>
+  <select id="searchBnzProductQuaList" resultMap="BaseResultMap">
+    select (select dict_name
+            from bnz_dict_info b
+            where a.qua_code = b.dict_id
+              and b.dict_category_id = 3)                                           as qua_name,
+           count(*)                                                                 as sum,
+           #{model.orgInfoId}                                                       as orgInfoId,
+           qua_code,
+           max(a.update_time)                                                       as update_time,
+           case when add_months(sysdate, 3) > min(valid_date) then '1' else '0' end as validstate
+    from bnz_product_qua a
+    where a.org_info_id = #{model.orgInfoId}
+      and a.qua_type = #{model.quaType}
+      and a.type_flag = #{model.typeFlag}
+      and a.is_del = 0
+    group by a.qua_code
+  </select>
+  <select id="searchBnzProductQuaDetailList" resultMap="BaseResultMap">
+    select id, org_info_id,org_name,qua_code,(select dict_name from bnz_dict_info where dict_category_id=3 and
+    dict_id=qua_code)as qua_code_name,qua_value, qua_type, valid_date, is_show,type_flag, is_del, update_user,
+    update_time,case when add_months(sysdate,3)>valid_date then '1' else '0' end as validstate， create_user, create_time
+    from bnz_product_qua
+    <where>
+      <if test="model.orgInfoId != null">
+        and org_info_id=#{model.orgInfoId}
+      </if>
+      <if test="model.quaType!= null and model.quaType!=''">
+        and qua_type=#{model.quaType}
+      </if>
+      <if test="model.quaCode!= null and model.quaCode!=''">
+        and qua_code=#{model.quaCode}
+      </if>
+      <if test="model.typeFlag!=null and model.typeFlag!=''">
+        and type_flag=#{model.typeFlag}
+      </if>
+      <if test="model.isShow!=null and model.isShow!=''">
+        and is_show=#{model.isShow}
+      </if>
+      <if test="model.orgName!=null and model.orgName!='' or model.quaName!='' and model.quaName!=null">
+        and (org_name like concat('%',concat(#{model.orgName},'%')) or
+        qua_value like concat('%',concat(#{model.orgName},'%')))
+      </if>
+      <include refid="is_del"></include>
+    </where>
+
+  </select>
+  <update id="updateModel" parameterType="com.rsd.domain.BnzProductQua">
+    update bnz_product_qua
+    <set>
+      <if test="model.quaValue != null">
+        QUA_VALUE = #{model.quaValue,jdbcType=VARCHAR},
+      </if>
+      <if test="model.orgName != null">
+        ORG_NAME = #{model.orgName,jdbcType=VARCHAR},
+      </if>
+      <if test="model.isShow!=null and model.isShow!=''">
+        IS_SHOW = #{model.isShow},
+      </if>
+      <if test="model.validDate!=null">
+        valid_Date=#{model.validDate},
+      </if>
+      <if test="model.updateUser != null">
+        UPDATE_USER = #{model.updateUser,jdbcType=VARCHAR},
+      </if>
+        UPDATE_TIME = sysdate
+    </set>
+    where ID = #{model.id,jdbcType=DECIMAL}
+  </update>
+
+
+  <update id="updateByCodeAndType" parameterType="com.rsd.domain.BnzProductQua">
+    update bnz_product_qua
+    <set>
+      <if test="model.orgInfoId != null">
+        ORG_INFO_ID = #{model.orgInfoId,jdbcType=DECIMAL},
+      </if>
+      <if test="model.quaValue != null">
+        QUA_VALUE = #{model.quaValue,jdbcType=VARCHAR},
+      </if>
+      <if test="model.isDel != null">
+        IS_DEL = #{model.isDel,jdbcType=DECIMAL},
+      </if>
+      <if test="model.updateUser != null">
+        UPDATE_USER = #{model.updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="model.updateTime != null">
+        UPDATE_TIME = #{model.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="model.createUser != null">
+        CREATE_USER = #{model.createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="model.createTime != null">
+        CREATE_TIME = #{model.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="model.validDate != null">
+        VALID_DATE = #{model.validDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where QUA_CODE = #{model.quaCode,jdbcType=DECIMAL} and QUA_TYPE =
+    #{model.quaType,jdbcType=DECIMAL}
+  </update>
+
+
+  <insert id="insertModel" parameterType="com.rsd.domain.BnzProductQua" keyProperty="id">
+    <selectKey resultType="java.lang.Long" keyProperty="model.id" order="BEFORE">
+      select BNZ_PRODUCT_QUA_SEQUENCE.nextval as id from dual
+    </selectKey>
+    insert into bnz_product_qua (ID,
+    ORG_INFO_ID, QUA_CODE,
+    QUA_VALUE, QUA_TYPE, IS_DEL,CREATE_USER,
+    CREATE_TIME,UPDATE_USER,UPDATE_TIME, VALID_DATE,org_name,type_flag,is_show)
+    values
+    (#{model.id}, #{model.orgInfoId,jdbcType=DECIMAL},
+    #{model.quaCode,jdbcType=DECIMAL},
+    #{model.quaValue,jdbcType=VARCHAR},
+    #{model.quaType,jdbcType=DECIMAL}, #{model.isDel,jdbcType=DECIMAL},
+    #{model.createUser,jdbcType=VARCHAR},
+    sysdate,
+    #{model.updateUser,jdbcType=VARCHAR},
+    sysdate,
+    #{model.validDate,jdbcType=TIMESTAMP},
+    #{model.orgName,jdbcType=VARCHAR},
+    #{model.typeFlag,jdbcType=VARCHAR},
+    #{model.isShow}
+    )
+  </insert>
+
+
+  <select id="getGroupQuaInfoByPage" resultType="com.rsd.domain.BnzProductQua"
+          parameterType="com.rsd.domain.BnzProductQua">
+    select * from (
+    select
+    qi.qua_code,qi.qua_type,oi.org_name,oi.id org_info_id,dic.dict_name
+    quaName,qi.update_time,qi.update_user,qi.valid_date,(qi.valid_date-sysdate) toNow,ac.nickname,ac.user_name
+    from (
+    select
+    qiq.qua_code,qiq.qua_type,qiq.update_user,qiq.update_time,qiq.org_info_id,qig.valid_date
+    from bnz_product_qua qiq
+    left join
+    (select qi1.qua_code,qi1.qua_type,qi1.org_info_id,max(qi1.valid_date) valid_date from bnz_product_qua qi1
+    where qi1.is_del = 0
+    group by qi1.qua_code,qi1.qua_type,qi1.org_info_id
+    ) qig
+    on qig.qua_code = qiq.qua_code and qig.qua_type = qiq.qua_type and qig.org_info_id = qiq.org_info_id
+    where
+    exists (
+    select qi2.qua_code,qi2.qua_type,max(qi2.update_time) update_time,max(qi2.valid_date) valid_date
+    from bnz_product_qua qi2
+    where qi2.is_del = 0
+    group by qi2.qua_code,qi2.qua_type,qi2.org_info_id
+    having qiq.qua_code = qi2.qua_code and qiq.qua_type = qi2.qua_type and qiq.update_time = max(qi2.update_time)
+    and qiq.org_info_id = qi2.org_info_id
+    )
+    ) qi
+    left join BNZ_DICT_INFO dic on dic.dict_id = qi.qua_code and dic.dict_Category_Id = qi.qua_type
+    left join BNZ_ORG_INFO oi on qi.org_info_id = oi.id
+    left join BNZ_ACCOUNT ac on ac.id = qi.update_user
+    <where>
+      <if test="model.orgInfoId != null">
+        and qi.ORG_INFO_ID = #{model.orgInfoId}
+      </if>
+      <if test="model.quaCode != null">
+        and qi.QUA_CODE = #{model.quaCode}
+      </if>
+      <if test="model.quaType != null">
+        and qi.QUA_TYPE = #{model.quaType}
+      </if>
+      <if test="model.updateUser != null and model.updateUser!=''">
+        and qi.UPDATE_USER = #{model.updateUser,jdbcType=VARCHAR}
+      </if>
+      <if test="model.createUser != null">
+        and qi.CREATE_USER = #{model.createUser,jdbcType=VARCHAR}
+      </if>
+      <if test="model.validDate != null">
+        and qi.VALID_DATE = #{model.validDate}
+      </if>
+      <if test="model.quaName != null and model.quaName != ''">
+        and dic.dict_name like '%'||#{model.quaName}||'%'
+      </if>
+      <if test="model.orgName != null and model.orgName != ''">
+        and oi.org_name like '%'||#{model.orgName}||'%'
+      </if>
+      <if test="model.startUpdateDate != null">
+        and qi.update_time &gt;= #{model.startUpdateDate}
+      </if>
+      <if test="model.endUpdateDate != null">
+        and qi.update_time &lt;= #{model.endUpdateDate}
+      </if>
+      <if test="model.startValidDate != null">
+        and qi.valid_date &gt;= #{model.startValidDate}
+      </if>
+      <if test="model.endValidDate != null">
+        and qi.valid_date &lt;= #{model.endValidDate}
+      </if>
+
+    </where>
+    )
+
+    <if test="page.sorts != null">
+      <foreach collection="page.sorts" item="sort" separator="," open="order by ">
+        ${sort.field} ${sort.dir}
+      </foreach>
+    </if>
+    <if test="page.sorts == null">
+      order by update_time desc
+    </if>
+  </select>
+
+  <select id="get" resultType="com.rsd.domain.BnzProductQua">
+    select tt.*,
+           (select count(0)
+            from bnz_qua_product t
+            where t.org_qua_info_id = tt.id) product_Num
+    from bnz_product_qua tt
+    where id
+            = #{id}
+  </select>
+  <select id="findByPage" parameterType="com.rsd.domain.BnzProductQua"
+          resultType="com.rsd.domain.BnzProductQua">
+    select
+    sum(case when qp.id is not null then 1 else 0 end)
+    productNum,qi.id,qi.qua_type,qi.valid_date,qi.qua_value,qi.qua_code,qi.org_info_id,ac.user_name,qi.update_time
+    from bnz_product_qua qi
+    left join bnz_qua_product qp on qi.id =
+    qp.org_qua_info_id
+    left join BNZ_DICT_INFO d on qp.pro_qua_type_id =
+    d.id and
+    d.dict_category_id = qi.qua_type
+    left join BNZ_ACCOUNT ac on ac.user_name = qi.update_user
+    <where>
+      <if test="model.id != null">
+        and qi.id = #{model.id}
+      </if>
+      <if test="model.orgInfoId != null">
+        and qi.ORG_INFO_ID = #{model.orgInfoId}
+      </if>
+      <if test="model.quaCode != null">
+        and qi.QUA_CODE = #{model.quaCode}
+      </if>
+      <if test="model.quaType != null">
+        and qi.QUA_TYPE = #{model.quaType}
+      </if>
+      <if test="model.isDel != null">
+        and qi.IS_DEL = #{model.isDel}
+      </if>
+      <if test="model.updateUser != null">
+        and qi.UPDATE_USER = #{model.updateUser,jdbcType=VARCHAR}
+      </if>
+      <if test="model.updateTime != null">
+        and qi.UPDATE_TIME = #{model.updateTime}
+      </if>
+      <if test="model.createUser != null">
+        and qi.CREATE_USER = #{model.createUser,jdbcType=VARCHAR}
+      </if>
+      <if test="model.createTime != null">
+        and qi.CREATE_TIME = #{model.createTime}
+      </if>
+      <if test="model.validDate != null">
+        and qi.VALID_DATE = #{model.validDate}
+      </if>
+    </where>
+    group by
+    qi.id,qi.qua_value,qi.qua_code,qi.org_info_id,qi.qua_type,qi.valid_date,qi.update_time,ac.user_name
+    order by qi.update_time desc
+  </select>
+
+  <!-- 按产品id查资质 -->
+  <select id="getQuaInfoByProIdPage" resultType="com.rsd.domain.BnzProductQuaModel">
+    select qi.*
+    from bnz_qua_product qr,
+         bnz_product_qua qi
+    where qr.org_qua_info_id = qi.id
+      and qr.is_del = #{model.isDel}
+      and qr.org_pro_id = #{model.orgProId}
+      and qr.pro_qua_type_id = #{model.proQuaTypeId}
+    order by qr.id desc
+  </select>
+
+
+  <update id="updateDelByRecordNotNull">
+    update bnz_product_qua
+    <set>
+      <if test="isDel!=null">
+        is_del = #{isDel},
+      </if>
+      <if test="updateUser != null">
+        UPDATE_USER = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      UPDATE_TIME = sysdate
+    </set>
+    <where>
+      <if test="id != null">
+        and id = #{id}
+      </if>
+      <if test="orgInfoId != null">
+        and ORG_INFO_ID = #{orgInfoId}
+      </if>
+      <if test="quaCode != null">
+        and QUA_CODE = #{quaCode}
+      </if>
+      <if test="quaType != null">
+        and QUA_TYPE = #{quaType}
+      </if>
+      <if test="validDate != null">
+        and VALID_DATE = #{validDate}
+      </if>
+    </where>
+
+  </update>
+  <select id="findQuaInfoByRecordNotNull" parameterType="com.rsd.domain.BnzProductQua"
+          resultType="com.rsd.domain.BnzProductQua">
+    select * from bnz_product_qua
+    <where>
+      <if test="id != null">
+        and id = #{id}
+      </if>
+      <if test="orgInfoId != null">
+        and ORG_INFO_ID = #{orgInfoId}
+      </if>
+      <if test="quaCode != null">
+        and QUA_CODE = #{quaCode}
+      </if>
+      <if test="quaType != null">
+        and QUA_TYPE = #{quaType}
+      </if>
+      <if test="isDel != null">
+        and IS_DEL = #{isDel}
+      </if>
+      <if test="updateUser != null">
+        and UPDATE_USER = #{updateUser,jdbcType=VARCHAR}
+      </if>
+      <if test="updateTime != null">
+        and UPDATE_TIME = #{updateTime}
+      </if>
+      <if test="createUser != null">
+        and CREATE_USER = #{createUser,jdbcType=VARCHAR}
+      </if>
+      <if test="createTime != null">
+        and CREATE_TIME = #{createTime}
+      </if>
+      <if test="validDate != null">
+        and VALID_DATE = #{validDate}
+      </if>
+    </where>
+  </select>
+
+
+  <select id="getQuaListByPage" resultType="com.rsd.domain.BnzProductQua"
+          parameterType="com.rsd.domain.BnzProductQua">
+    SELECT t.*, t1.dict_name as quaName
+    FROM bnz_product_qua t,
+         GPO_DICT_INFO t1
+    WHERE t.QUA_TYPE = #{model.quaType}
+      AND t.ORG_INFO_ID = #{model.orgInfoId}
+      AND t.is_del = 0
+      AND t.QUA_CODE = t1.dict_id
+      and t.QUA_CODE = #{model.quaCode}
+      AND t.QUA_TYPE = t1.dict_Category_Id
+    ORDER BY t.update_time desc
+  </select>
+
+  <select id="getQuaById" resultType="com.rsd.domain.BnzProductQuaModel"
+          parameterType="com.rsd.domain.BnzProductQuaModel">
+    SELECT t.*, t1.dict_name as quaName
+    FROM bnz_product_qua t,
+         GPO_DICT_INFO t1
+    WHERE t.QUA_CODE = t1.dict_id
+      and t.QUA_CODE = #{model.quaCode}
+      AND t.QUA_TYPE = t1.dict_Category_Id
+      and t.id = #{model.id}
+  </select>
+
+  <select id="findQuaInfoExport" resultType="com.rsd.domain.BnzProductQuaModel"
+          parameterType="com.rsd.domain.BnzProductQuaModel">
+    select * from bnz_product_qua WHERE org_info_id=#{model.orgInfoId} and qua_type=#{model.quaType} and is_del = 0
+    <if test="model.quaCodes != null">
+      and qua_code in
+      <foreach item="item" index="index" collection="model.quaCodes" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+  </select>
+  <select id="searchBnzProductQuaExprieList" resultType="com.rsd.domain.BnzProductQuaModel">
+    select w.id, w.org_info_id,(select dict_name from bnz_dict_info where dict_category_id=3 and
+    dict_id=w.qua_code)as qua_code_name
+    from bnz_product_qua w
+    where to_char(add_months(sysdate, 6), 'yyyy-MM-dd') = to_char(w.valid_date, 'yyyy-MM-dd')
+    or to_char(add_months(sysdate, 3), 'yyyy-MM-dd') = to_char(w.valid_date, 'yyyy-MM-dd')
+    or to_char(sysdate + 7, 'yyyy-MM-dd') = to_char(w.valid_date, 'yyyy-MM-dd')
+    and type_flag=1
+    <include refid="is_del"></include>
+  </select>
+</mapper>

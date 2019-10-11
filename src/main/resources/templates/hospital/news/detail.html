@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/hospital/global :: #common"></head>
+<body>
+<div class="hsptAll">
+    <div th:replace="/hospital/global :: #header"></div>
+    <div th:replace="/hospital/global :: #navbar"></div>
+    <div class="center" th:if="${news!=null}">
+        <div class="list_a" th:if="${news.newsType==4}"><a th:href="@{/hospital/index}"> 首页 </a>&gt; <a th:href="@{/hospital/news/list?newsType=4}">政府文件</a></div>
+        <div class="list_a" th:if="${news.newsType==5}"><a th:href="@{/hospital/index}"> 首页 </a>&gt; <a th:href="@{/hospital/news/list?newsType=5}">工作动态</a></div>
+        <div class="list_a" th:if="${news.newsType==6}"><a th:href="@{/hospital/index}"> 首页 </a>&gt; <a th:href="@{/hospital/news/list?newsType=6}">资料下载</a></div>
+        <div class="list_a" th:if="${news.newsType==7}"><a th:href="@{/hospital/index}"> 首页 </a>&gt; <a th:href="@{/hospital/news/list?newsType=7}">企业评价</a></div>
+        <div class="hspt_title"><h1 th:text="${news.title}"/>
+            <p th:text="${#dates.format(news.createTime, 'yyyy-MM-dd')}"></p>
+        </div>
+        <div class="hspt_n" style="min-height: 400px">
+            <p  th:utext="${news.content}"/>
+        </div>
+    </div>
+    <div th:replace="/hospital/global :: #footer"></div>
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+
+    $(document).ready(function(){
+
+    });
+
+    /*]]>*/
+</script>
+
+
+<style>
+
+</style>
+</body>
+</html>

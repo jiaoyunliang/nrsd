@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzPackageRecordMapper">
+  <insert id="insert" parameterType="com.rsd.domain.BnzPackageRecordModel" keyProperty="id"
+          useGeneratedKeys="false">
+    <selectKey resultType="Long" keyProperty="id" order="BEFORE">
+      select BNZ_PACKAGE_RECORD_SEQUENCE.nextval as id from dual
+    </selectKey>
+    insert into bnz_package_record (id, package_url, type, org_info_id, create_user, create_time)
+    values (#{id}, #{packageUrl}, #{type}, #{orgInfoId}, #{createUser}, sysdate)
+  </insert>
+
+  <select id="findPackageRecordPage" resultType="com.rsd.domain.BnzPackageRecordModel">
+    select * from bnz_package_record
+    <where>
+      <if test="model.orgInfoId != null">
+        and org_info_id = #{model.orgInfoId}
+      </if>
+      <if test="model.type != null">
+        and type = #{model.type}
+      </if>
+    </where>
+    order by create_time desc
+  </select>
+  <select id="selectInstitutionQuaPackState" resultType="com.rsd.domain.BnzPackageRecordModel">
+    select b.dict_id,
+           b.dict_name,
+           case
+             when (select qua_type
+                   from bnz_institution_qua a
+                   where a.type_flag = 1
+                     and a.is_del = 0
+                     and a.qua_type = b.dict_id
+                   group by a.qua_type) is null then 1
+             else 0 end as state
+    from bnz_dict_info b
+    where b.dict_category_id = 2
+      and b.is_del = 0
+  </select>
+
+  <select id="selectProductQuaQuaPackState" resultType="com.rsd.domain.BnzPackageRecordModel">
+    select b.dict_id,
+           b.dict_name,
+           case
+             when (select qua_type
+                   from bnz_product_qua a
+                   where a.type_flag = 1
+                     and a.is_del = 0
+                     and a.qua_code = b.dict_id
+                   group by a.qua_type) is null then 1
+             else 0 end as state
+    from bnz_dict_info b
+    where b.dict_category_id = 3
+      and b.is_del = 0
+  </select>
+</mapper>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/hospital/global :: #common"></head>
+<link rel="stylesheet" th:href="@{/lib/element-ui/lib/theme-chalk/index.css}">
+<script>
+    function onoff_hotsea(a){
+        var height=$(a).parent("ul").height()+36;
+        if($(a).hasClass("on")){
+            $(a).parents(".hot_sea").removeAttr("style");
+            $(a).find("span").text("展开");
+            $(a).removeClass("on");
+        }else{
+            $(a).parents(".hot_sea").css("height",height+"px");
+            $(a).find("span").text("收起");
+            $(a).addClass("on");
+        }
+    }
+</script>
+<body>
+<div class="hsptAll">
+    <div th:replace="/hospital/global :: #header"></div>
+    <div th:replace="/hospital/global :: #search"></div>
+    <div class="hot_sea">
+        <ul>
+            <li class="one_onoff" onclick="onoff_hotsea(this)"><span>收起</span><i></i></li>
+            <li th:each="item,itemStat : ${productTypeList}">
+                <a id="activate"  th:if="${item.id==productTypeId}"  th:href="@{/hospital/product/list(productTypeId=${item.id})}" th:text="${item.name}"></a>
+                <a th:if="${item.id!=productTypeId}" th:href="@{/hospital/product/list(productTypeId=${item.id})}" th:text="${item.name}"></a>
+            </li>
+        </ul>
+    </div>
+    <div class="center" >
+        <div class="list_a"><a th:href="@{/hospital/index}"> 首页 </a><span id="productTypeName"></span></div>
+        <div class="hspt_c" th:if="${session.hotProductList!=null}">
+            <div class="hspt_c_2">推广产品</div>
+            <ul>
+                <li th:each="item,itemStat : ${session.hotProductList}" th:if="${itemStat.count}<=5">
+                    <a th:href="@{/hospital/product/view(id=${item.id})}">
+                        <img style="width: 203px;height: 180px" th:each="pic,picStat : ${item.picList}" th:if="${picStat.count}==1" th:src="${fileServer}+${pic.fileUrl}"/>
+                    </a>
+                    <a th:href="@{/hospital/product/view(id=${item.id})}">
+                        <p th:text="${item.productName}"/>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="hspt_wf">
+            <ul class="clearfix picture" id="productTable" th:attr="productTypeId=${productTypeId},productName=${productName}">
+            </ul>
+        </div>
+    </div>
+    <div id="load">can you see me?</div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function(){
+        if($("#activate").text()!=''){
+            $("#productTypeName").text(' > '+$("#activate").text());
+        }
+        new WaterFall($("#load"),10,1).listenerScroll();
+    });
+
+    /*]]>*/
+</script>
+<script type="text/javascript" th:src="@{/hospital/js/product/WaterFall.js}"></script>
+<style>
+    #activate {
+        background-color: #7F90AA;
+        border-color: #7F90AA;
+        color: #FFF;
+    }
+
+    .hspt_wf {
+        width: 1200px;
+        /*height: auto;*/
+        margin-top: .875rem;
+    }
+
+
+
+    .hspt_wf ul li:hover{box-shadow:0px 0px 20px rgba(0,0,0,0.2);}
+
+
+    .clearfix::after {
+        content: "";
+        display: block;
+        clear: both;
+    }
+    .picture {
+        position: relative;
+        /* border: 1px solid gray; */
+    }
+    .picture .item {
+        position: absolute;
+        padding: 0 0 10px 0;
+        width: 280px;
+        margin: 10px;
+        border: 1px solid #dfdfdf;
+        background: #fff;
+        opacity: 0;
+        transition: all .8s;
+    }
+
+
+    .item img {
+        width: 100%;
+    }
+
+    .item p {
+        line-height: 24px;
+        height: 58px;
+        overflow: hidden;
+        padding: 10px 10px 0px;
+        color: #151515;
+        text-align: center;
+    }
+
+    #load {
+        visibility: hidden;
+    }
+
+</style>
+</body>
+</html>

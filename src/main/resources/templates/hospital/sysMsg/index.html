@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/hospital/global :: #common"></head>
+<link rel="stylesheet" th:href="@{/lib/element-ui/lib/theme-chalk/index.css}">
+<body>
+<div class="hsptAll">
+    <div th:replace="/hospital/global :: #header"></div>
+    <div th:replace="/hospital/global :: #navbar"></div>
+    <div class="center" id="sysMsg">
+        <template>
+            <div style="padding-top: 15px">
+                <el-tabs v-model="activeName" @tab-click="handleClick" type="border-card">
+                    <el-tab-pane
+                        label="站内消息"
+                        name="msg">
+                        <msg-component :is-view="activeName"/>
+                    </el-tab-pane>
+                    <el-tab-pane
+                        label="系统通知"
+                        name="notice">
+                        <notice-component :is-view="activeName"/>
+                    </el-tab-pane>
+                </el-tabs>
+            </div>
+        </template>
+    </div>
+    <div th:replace="/hospital/global :: #footer"></div>
+</div>
+
+<script type="text/javascript" th:src="@{/lib/moment/moment.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/lib/element-ui/lib/index.js}"></script>
+<script type="text/javascript" th:src="@{/lib/axios/dist/axios.js}"></script>
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
+<script type="module" th:src="@{/hospital/js/sysMsg/index.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function(){
+    });
+    /*]]>*/
+</script>
+
+
+<!-- 站内消息 组件模板 -->
+<script type="x-template" id="msg-template">
+    <div>
+        <el-row>
+            <el-col :span="24">
+                <el-button  size="small" @click="handelAdd"  type="primary">发送消息</el-button>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="24" style="min-height: 500px">
+                <el-table
+                        :data="dataList"
+                        :show-header="false">
+                    <el-table-column
+                        prop="title"
+                        label="标题"
+                        :show-overflow-tooltip="true">
+                        <template slot-scope="scope">
+                            <p v-html="titleHref(scope.row)"></p>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="createTime" label="发布时间">
+                        <template slot-scope="scope">
+                            <div style="text-align: right">{{ scope.row.createTime | dateFormat}}</div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="24">
+                <el-pagination
+                        v-bind:current-page="pageInfo.current"
+                        v-bind:page-size="pageInfo.size"
+                        :total="pageInfo.total"
+                        layout="total,sizes,prev,pager,next,jumper"
+                        v-bind:page-sizes="[10, 50, 100]"
+                        v-on:size-change="changePageSize"
+                        v-on:current-change="pageIndexChange">
+                </el-pagination>
+            </el-col>
+        </el-row>
+        <add-insideMsg
+            :dialog-title="dialogTitle"
+            :show-dialog.sync="isShowDialog"
+        />
+    </div>
+</script>
+
+<!-- 系统通知 组件模板 -->
+<script type="x-template" id="notice-template">
+    <div>
+        <el-row>
+            <el-col :span="24" style="text-align: right">
+                <el-button  size="small" @click="handelAdd" type="primary">信息反馈</el-button>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="24" style="min-height: 500px">
+                <el-table
+                    :data="dataList"
+                    :show-header="false">
+                    <el-table-column
+                        prop="title"
+                        label="标题"
+                        :show-overflow-tooltip="true">
+                        <template slot-scope="scope">
+                            <p v-html="titleHref(scope.row)"></p>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="createTime" label="发布时间">
+                        <template slot-scope="scope">
+                            <div style="text-align: right">{{ scope.row.createTime | dateFormat}}</div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="24">
+                <el-pagination
+                        v-bind:current-page="pageInfo.current"
+                        v-bind:page-size="pageInfo.size"
+                        :total="pageInfo.total"
+                        layout="total,sizes,prev,pager,next,jumper"
+                        v-bind:page-sizes="[10, 50, 100]"
+                        v-on:size-change="changePageSize"
+                        v-on:current-change="pageIndexChange">
+                </el-pagination>
+            </el-col>
+        </el-row>
+        <add-feedback
+                :dialog-title="dialogTitle"
+                :show-dialog.sync="isShowDialog"
+            >
+        </add-feedback>
+    </div>
+</script>
+
+
+<!-- add-feedback-template 组件模板 -->
+<script type="x-template" id="add-feedback-template">
+    <div>
+        <el-dialog
+                :top="dialogTop"
+                :title="dialogTitle"
+                :close-on-click-modal="false"
+                :visible="showDialog"
+                @close="dialogClosed"
+        >
+            <el-form
+                :model="formData"
+                label-width="80px"
+            >
+                <el-form-item label="内容:" prop="content">
+                    <el-input
+                            type="textarea"
+                            :rows="5"
+                            v-model="formData.content"
+                    ></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="handelAdd">发送</el-button>
+                <el-button @click="dialogClosed">关闭</el-button>
+            </div>
+        </el-dialog>
+    </div>
+</script>
+
+<!-- add-insideMsg-templat 组件模板 -->
+<script type="x-template" id="add-insideMsg-template">
+    <div>
+        <el-dialog
+                :top="dialogTop"
+                :title="dialogTitle"
+                :close-on-click-modal="false"
+                :visible="showDialog"
+                @close="dialogClosed"
+        >
+            <el-form
+                :model="formData"
+                label-width="100px"
+                ref="form"
+            >
+                <el-form-item
+                        label="收件企业:"
+                        prop="orgIds"
+                        :rules="[{ required: true, message: '请选择收件企业', trigger: 'change' }]"
+                >
+                    <el-select
+                            v-model="formData.orgIds"
+                            multiple
+                            filterable
+                            remote
+                            reserve-keyword
+                            placeholder="请输入关键词"
+                            :remote-method="handelQueryOrgOptions"
+                            :loading="loading">
+                        <el-option
+                                v-for="item in orgOptions"
+                                :key="item.id"
+                                :label="item.orgName"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item
+                        label="标题:"
+                        prop="title"
+                        :rules="[{ required: true, message: '请填写标题', trigger: 'blur' },
+                                 { max: 50, message: '长度在 50 个字符', trigger: 'blur' }]"
+                >
+                    <el-input v-model="formData.title"></el-input>
+                </el-form-item>
+                <el-form-item
+                        label="内容:"
+                        prop="content"
+                        :rules="[{ required: true, message: '请填写内容', trigger: 'blur' },
+                                 { max: 200, message: '长度在 200 个字符', trigger: 'blur' }]"
+                >
+                    <el-input
+                        type="textarea"
+                        :rows="5"
+                        v-model="formData.content"
+                    ></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="handelAdd">发送</el-button>
+                <el-button @click="dialogClosed">关闭</el-button>
+            </div>
+        </el-dialog>
+    </div>
+</script>
+<style>
+</style>
+</body>
+</html>

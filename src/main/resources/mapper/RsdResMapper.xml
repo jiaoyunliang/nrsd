@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzResMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.RsdRes">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="RES_NAME" jdbcType="VARCHAR" property="resName" />
+    <result column="RES_URL" jdbcType="VARCHAR" property="resUrl" />
+    <result column="RES_TYPE" jdbcType="VARCHAR" property="resType" />
+    <result column="RES_CODE" jdbcType="VARCHAR" property="resCode" />
+    <result column="RES_COMPONENT" jdbcType="VARCHAR" property="resComponent" />
+    <result column="SEQ" jdbcType="DECIMAL" property="seq" />
+    <result column="ATUH_URI" jdbcType="VARCHAR" property="atuhUri" />
+    <result column="ORG_FLAG" jdbcType="DECIMAL" property="orgFlag" />
+    <result column="HOSPITAL_FLAG" jdbcType="DECIMAL" property="hospitalFlag" />
+    <result column="ADMIN_FLAG" jdbcType="DECIMAL" property="adminFlag" />
+    <result column="SYS_ID" jdbcType="DECIMAL" property="sysId" />
+    <result column="PARENT_CODE" jdbcType="VARCHAR" property="parentCode" />
+  </resultMap>
+
+
+  <select id="queryResList" resultType="com.rsd.domain.RsdRes">
+    SELECT * from RSD_RES WHERE SYS_ID = #{model.sysId}
+    <if test="model.orgFlag != null" >
+      AND ORG_FLAG = 1
+    </if>
+    <if test="model.hospitalFlag != null" >
+      AND HOSPITAL_FLAG = 1
+    </if>
+    <if test="model.adminFlag != null" >
+      AND ADMIN_FLAG = 1
+    </if>
+    ORDER BY SEQ
+  </select>
+
+  <select id="queryResListByRoleId" resultType="com.rsd.domain.RsdRes">
+    SELECT
+        r.*
+    FROM
+        BNZ_RES r,
+        BNZ_ROLE_RES rr
+    WHERE
+        r.id = rr.RES_ID
+        AND rr.ROLE_ID = #{model.id}
+    ORDER BY nvl(length(trim(r.RES_CODE)),0) asc,r.RES_CODE asc
+  </select>
+
+  <select id="getId" resultType="Long">
+    select BNZ_RES_SEQ.nextval from dual
+  </select>
+</mapper>

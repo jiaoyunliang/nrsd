@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+</head>
+<body>
+<div id="header">
+  <div class="hsptAll">
+    <div class="hspt_header">
+      <div class="hspt_header_a"><a href="#" class="header_logo"><img src="../images/logo.png" width="40"
+                                                                      height="40">海虹帮你找</a>
+        <div class="hspt_header_b"><span>Find For You</span> —只为更高效的服务</div>
+        <p class="header_meg"><span th:text="${account.userName}">张三</span><a href="#">消息<i>2</i></a><a
+          href="#">修改密码</a><a href="javascript:void(0)" @click="loinout">退出</a></p>
+      </div>
+    </div>
+  </div>
+  <div class="hspt_nav box-shadow-bottom" th:if="${#authorization.expression('hasRole(''ROLE_HOSPITAL'')')}">
+    <ul>
+      <li><a href="/hospital/index">首页</a></li>
+      <li th:each="item1,itemStat:${session.session_account_res[0].children}">
+        <a th:href="${item1.resUrl}" th:text="${item1.resName}"/>
+      </li>
+      <li href="#">服务专员</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>
+
+

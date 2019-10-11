@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzNewsMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzNews">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="TITLE" jdbcType="VARCHAR" property="title" />
+    <result column="NEWS_TYPE" jdbcType="DECIMAL" property="newsType" />
+    <result column="IS_RED" jdbcType="DECIMAL" property="isRed" />
+    <result column="IS_TOP" jdbcType="DECIMAL" property="isTop" />
+    <result column="IS_NEW" jdbcType="DECIMAL" property="isNew" />
+    <result column="IS_DEL" jdbcType="DECIMAL" property="isDel" />
+    <result column="SYS_ID" jdbcType="DECIMAL" property="sysId" />
+    <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser" />
+    <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime" />
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+    <result column="CREATE_TIME" jdbcType="DATE" property="createTime" />
+    <result column="CONTENT" jdbcType="CLOB" property="content" />
+  </resultMap>
+
+
+  <select id="getId" resultType="Long">
+    select BNZ_NEWS_SEQ.nextval from dual
+  </select>
+
+  <select id="queryNewsList" resultType="com.rsd.domain.BnzNews">
+    SELECT
+        t.*
+    FROM
+        BNZ_NEWS t
+    WHERE
+        t.IS_DEL = 0
+        AND t.SYS_ID = #{model.sysId}
+        <if test="model.newsType != null" >
+          AND t.NEWS_TYPE = #{model.newsType}
+        </if>
+        <if test="model.title != null and model.title != ''" >
+          AND t.TITLE LIKE '%'||#{model.title}||'%'
+        </if>
+    ORDER BY
+        t.IS_TOP DESC,
+        t.CREATE_TIME DESC
+  </select>
+</mapper>

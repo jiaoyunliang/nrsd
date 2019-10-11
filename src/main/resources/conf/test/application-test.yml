@@ -1,0 +1,37 @@
+server:
+  port: 5060
+  context-path: /
+spring:
+  datasource:
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+    url: jdbc:oracle:thin:@172.25.13.98:1521:data98
+    username: nbnz_test
+    password: nbnz_test
+    type: com.alibaba.druid.pool.DruidDataSource
+    spring.datasource.initialSize: 5
+    spring.datasource.minIdle: 5
+    spring.datasource.maxActive: 20
+    spring.datasource.maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    testWhileIdle: true
+    validationQuery: SELECT 1 FROM DUAL
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    filters: stat,wall,log4j
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    useGlobalDataSourceStat: true
+
+  redis:
+    host: localhost
+    #password: redispassword
+    port: 6379
+    pool:
+      max-idle: 100
+      min-idle: 1
+      max-active: 1000
+      max-wait: -1
+
+

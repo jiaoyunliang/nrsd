@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzQuaProductMapper">
+    <insert id="insertQuaPro" keyProperty="id" useGeneratedKeys="false" parameterType="com.rsd.domain.BnzQuaProductModel">
+        <selectKey resultType="Long" keyProperty="id" order="BEFORE">
+            select BNZ_QUA_PRODUCT_SEQUENCE.nextval as id from dual
+        </selectKey>
+        insert into bnz_qua_product(id,
+        org_qua_info_id,
+        pro_qua_type_id,
+        org_pro_id,
+        is_del,
+        update_user,
+        update_time,
+        create_user,
+        create_time)
+        values(
+        #{id},
+        #{orgQuaInfoId},
+        #{proQuaTypeId},
+        #{orgProId},
+        #{isDel},
+        #{updateUser},
+        #{updateTime},
+        #{createUser},
+        #{createTime}
+        )
+    </insert>
+
+    <!-- 通过产品ID 查 资质类型 -->
+    <select id="getQuaTypeByProIdPage" resultType="com.rsd.domain.BnzQuaProductModel">
+        select di.dict_name as proQuaTypeName, qr.org_pro_id, di.dict_id as proQuaTypeId,
+               max(qr.update_time) as update_time,
+               max(qr.create_time) as create_time
+        from bnz_qua_product qr, gpo_dict_info di
+        where qr.pro_qua_type_id = di.dict_id
+          and qr.is_del = #{model.isDel}
+          and di.dict_category_id = 3
+          and qr.org_pro_id = #{model.orgProId}
+        group by di.id, di.dict_name, qr.org_pro_id, di.dict_id
+        order by di.id
+    </select>
+
+
+    <update id="deleteQuaPro" parameterType="com.rsd.domain.BnzQuaProductModel">
+        update bnz_qua_product set is_del = #{isDel},update_user = #{updateUser}, update_time = sysdate
+        where id = #{id}
+    </update>
+
+    <delete id="deleteQuaProByProIdAndQuaTypeId">
+        delete from bnz_qua_product where pro_qua_type_id = #{proQuaTypeId} and ORG_PRO_ID = #{orgProId}
+    </delete>
+
+    <delete id="deleteQuaProByProIdAndInfoId">
+        delete from bnz_qua_product where org_qua_info_id = #{orgQuaInfoId} and ORG_PRO_ID = #{orgProId}
+    </delete>
+    <select id="findQuaProByRecordNotNull" parameterType="com.rsd.domain.BnzQuaProductModel" resultType="java.lang.Integer">
+        select count(*) from bnz_qua_product
+        <where>
+            <if test="orgQuaInfoId != null">
+                and org_qua_info_id = #{orgQuaInfoId}
+            </if>
+            <if test="proQuaTypeId != null">
+                and pro_qua_type_id= #{proQuaTypeId}
+            </if>
+            <if test="orgProId != null">
+                and org_pro_id= #{orgProId}
+            </if>
+            <if test="isDel != null">
+                and is_del= #{isDel}
+            </if>
+            <if test="quaIds != null">
+                and org_qua_info_id in
+                <foreach collection="quaIds" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+        </where>
+    </select>
+</mapper>

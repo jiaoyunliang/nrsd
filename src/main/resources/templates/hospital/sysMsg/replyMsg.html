@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/hospital/global :: #common"></head>
+<body>
+<div class="hsptAll">
+    <div th:replace="/hospital/global :: #header"></div>
+    <div th:replace="/hospital/global :: #navbar"></div>
+    <div class="center">
+    <div class="list_a">
+        <a th:href="@{/hospital/index}"> 首页 </a>&gt;
+        <a th:href="@{/hospital/sysMsg/index?c=001003}">系统消息</a>
+    </div>
+    <div class="hspt_title"><h1 th:text="${insideMsg.title}"/>
+        <p th:text="${#dates.format(insideMsg.createTime, 'yyyy-MM-dd')}"></p>
+    </div>
+    <div class="hspt_n">
+        <p  th:utext="${insideMsg.content}"/>
+    </div>
+    <div class="hspt_s" style="min-height: 400px">
+        <table>
+            <tbody>
+            <tr th:each="item,itemStat : ${replyMsgList}" >
+                <td>
+                    <div class="hspt_s_1">
+                        <p th:text="${item.replyContent}"></p>
+                        <div class="hspt_s_1_1" th:text="${item.orgName}"></div>
+                    </div>
+                </td>
+                <td>
+                    <img src="../images/12322.jpg">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+    <div th:replace="/hospital/global :: #footer"></div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function(){
+    });
+    /*]]>*/
+</script>
+
+
+<style>
+
+</style>
+</body>
+</html>

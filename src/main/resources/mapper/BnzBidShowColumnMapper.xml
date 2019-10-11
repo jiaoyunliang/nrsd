@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzBidShowColumnMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzBidShowColumn">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="PROJECT_ID" jdbcType="DECIMAL" property="projectId" />
+    <result column="COLUMN_KEY" jdbcType="VARCHAR" property="columnKey" />
+    <result column="COLUMN_NAME" jdbcType="VARCHAR" property="columnName" />
+    <result column="COLUMN_ORDER" jdbcType="DECIMAL" property="columnOrder" />
+    <result column="IS_DEL" jdbcType="DECIMAL" property="isDel" />
+    <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser" />
+    <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime" />
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+    <result column="CREATE_TIME" jdbcType="DATE" property="createTime" />
+  </resultMap>
+</mapper>

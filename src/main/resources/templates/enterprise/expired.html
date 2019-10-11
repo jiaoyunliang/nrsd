@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/enterprise/global :: #common"></head>
+<body>
+<div class="hsptAll">
+</div>
+<div class="center">
+    <div style="margin:0 auto;margin-top: 200px;width:420px; height:224px;text-align: center">
+        登录超时 <span id="time">5</span> 秒后将返回首页，请重新登录<br>
+        <a th:href="@{/enterprise/index}">返回首页</a>
+    </div>
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function(){
+    });
+    var $time = document.getElementById('time'),
+        time = parseInt($time.innerHTML);
+    interval = null;
+    interval = setInterval(function(){
+        if(time > 0){
+            time--;
+            $time.innerHTML = time;
+        }else{
+            clearInterval(interval);
+            eLogout();
+        }
+    }, 1000);
+
+    /*]]>*/
+</script>
+<style>
+
+</style>
+</body>
+</html>

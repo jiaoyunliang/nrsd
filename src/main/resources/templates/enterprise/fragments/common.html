@@ -1,0 +1,47 @@
+<div id="common">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title th:name="${#request.getContextPath()}">海虹帮您找</title>
+  <link rel="stylesheet" th:href="@{/enterprise/css/css.css}" />
+  <link rel="stylesheet" th:href="@{/enterprise/css/mycss.css}" />
+  <link rel="stylesheet" th:href="@{/icomoon/style.css}" />
+  <link rel="stylesheet" th:href="@{/lib/element-ui/lib/theme-chalk/index.css}">
+  <link rel="stylesheet" th:href="@{/lib/viewer/viewer.css}">
+  <script type="text/javascript" th:src="@{/js/jquery-1.9.1.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.serializejson.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/Touch.js}"></script>
+  <script th:src="@{/enterprise/js/global.js}"></script>
+  <script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    function eLogout(){
+      $.ajax({
+        url: getCtx()+'/enterprise/logout',
+        type: 'get',
+        dataType: 'json',
+        contentType: 'application/json',
+        async: true,
+        success: function(data){
+          if(data.status==200){
+            location.href=getCtx()+'/enterprise/index';
+          }
+        }
+      });
+    }
+    $(document).ready(function(){
+      let nav_code = getUrlParam('c')
+      if(nav_code){
+        $("#"+nav_code).addClass("hover");
+      }
+      $(".more_meg").hide();
+    });
+    /*]]>*/
+  </script>
+  <div sec:authorize="isAuthenticated()">
+    <div th:unless="${#authorization.expression('hasRole(''ROLE_ENTERPRISE'')')}">
+      <script>
+        eLogout();
+      </script>
+    </div>
+  </div>
+</div>

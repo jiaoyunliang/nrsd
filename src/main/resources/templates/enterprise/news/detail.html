@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/enterprise/global :: #common"></head>
+<body>
+<div class="hsptAll">
+    <div th:replace="/enterprise/global :: #header"></div>
+    <div th:replace="/enterprise/global :: #navbar"></div>
+    <div class="center" th:if="${news!=null}" style="min-height: 500px">
+        <div class="list_a" th:if="${news.newsType==1}"><a th:href="@{/enterprise/index}"> 首页 </a>&gt; <a th:href="@{/enterprise/news/list?newsType=1}">资料下载</a></div>
+        <div class="list_a" th:if="${news.newsType==2}"><a th:href="@{/enterprise/index}"> 首页 </a>&gt; <a th:href="@{/enterprise/news/list?newsType=2}">行业动态</a></div>
+        <div class="list_a" th:if="${news.newsType==3}"><a th:href="@{/enterprise/index}"> 首页 </a>&gt; <a th:href="@{/enterprise/news/list?newsType=3}">项目公告</a></div>
+        <div class="hspt_title"><h1 th:text="${news.title}"/>
+            <p th:text="${#dates.format(news.createTime, 'yyyy-MM-dd')}"></p>
+        </div>
+        <div>
+            <p  th:utext="${news.content}"/>
+        </div>
+    </div>
+    <div th:replace="/enterprise/global :: #footer"></div>
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function(){
+
+    });
+    /*]]>*/
+</script>
+
+
+<style>
+
+</style>
+</body>
+</html>

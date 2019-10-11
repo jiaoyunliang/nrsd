@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/hospital/global :: #common"></head>
+<body>
+    <div class="hsptAll">
+        <div th:replace="/hospital/global :: #header"></div>
+        <div th:replace="/hospital/global :: #navbar"></div>
+        <div class="center">
+            <div class="list_b_1">
+                <div class="list_b_1_1"><input type="text" id="orgName"><button id="searchOrg" onclick="javascript:searchOrg();">搜索</button></div>
+            </div>
+            <div class="hspt_wf">
+                <ul class="clearfix picture">
+                </ul>
+                <div id="load">can you see me?</div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" th:inline="javascript">
+        /*<![CDATA[*/
+
+        $(document).ready(function(){
+
+            var orgName = getUrlParam("orgName");
+            if(orgName){
+                $("#orgName").val(orgName)
+            }
+
+            new WaterFall($("#load"),10,1).listenerScroll();
+
+            $("body").keydown(function() {
+                if (event.keyCode == "13") {
+                    $('#searchOrg').click();
+                }
+            });
+
+        });
+
+
+        function searchOrg() {
+            if($("#orgName").val()!=''){
+                location.href=getCtx()+'/hospital/enterprise/index?c=001001&orgName='+escape($("#orgName").val());
+            } else {
+                location.href=getCtx()+'/hospital/enterprise/index?c=001001';
+            }
+        }
+
+        /*]]>*/
+    </script>
+    <script type="text/javascript" th:src="@{/hospital/js/enterprise/WaterFall.js}"></script>
+
+<style>
+    .hspt_wf {
+        width: 1200px;
+        margin-top: .875rem;
+    }
+
+    .hspt_wf ul li:hover{box-shadow:0px 0px 20px rgba(0,0,0,0.2);}
+
+
+    .clearfix::after {
+        content: "";
+        display: block;
+        clear: both;
+    }
+    .picture {
+        position: relative;
+        /* border: 1px solid gray; */
+    }
+    .picture .item {
+        position: absolute;
+        padding: 0 0 10px 0;
+        width: 280px;
+        margin: 10px;
+        border: 1px solid #dfdfdf;
+        background: #fff;
+        opacity: 0;
+        transition: all .8s;
+    }
+
+    .item img {
+        width: 100%;
+    }
+
+    .item p {
+        line-height: 24px;
+        height: 58px;
+        overflow: hidden;
+        padding: 10px 10px 0px;
+        color: #151515;
+        text-align: center;
+    }
+
+    #load {
+        visibility: hidden;
+    }
+</style>
+</body>
+</html>

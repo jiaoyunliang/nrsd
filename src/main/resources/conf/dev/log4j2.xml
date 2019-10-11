@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="INFO">
+
+    <properties>
+        <!--dev-->
+        <property name="LOG_HOME">logs</property>
+
+        <!--prod-->
+        <!--<property name="LOG_HOME">/Users/tony/work/logs</property>-->
+
+        <property name="SERVER_NAME">nbnz</property>
+    </properties>
+
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+
+        <RollingFile name="RollingFileInfo" fileName="${LOG_HOME}/${SERVER_NAME}/all.log"
+                     filePattern="${LOG_HOME}/${SERVER_NAME}/log/$${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.log">
+            <Filters>
+                <ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+
+            <PatternLayout pattern="%d{yyyy.MM.dd 'at' HH:mm:ss.SSS} %msg - [%t] %-5level %logger{36}%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="RollingFileError" fileName="${LOG_HOME}/${SERVER_NAME}/error.log"
+                     filePattern="${LOG_HOME}/${SERVER_NAME}/error/$${date:yyyy-MM}/error-%d{yyyy-MM-dd}-%i.log">
+
+            <Filters>
+                <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+
+            <PatternLayout pattern="%d{yyyy.MM.dd 'at' HH:mm:ss.SSS} %msg - [%t] %-5level %logger{36}%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="30 MB"/>
+            </Policies>
+        </RollingFile>
+
+
+    </appenders>
+
+    <loggers>
+
+        <logger name="org.mybatis" level="DEBUG" additivity="false"/>
+
+        <logger name="com.searainbow.nbnz.mapper" level="DEBUG" additivity="false" >
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFileInfo" />
+        </logger>
+
+        <root level="INFO">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFileInfo" />
+            <AppenderRef ref="RollingFileError"/>
+        </root>
+    </loggers>
+
+</configuration>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org"
+>
+
+<head th:include="/enterprise/fragments/common :: #common"></head>
+<body>
+<div class="hsptAll">
+  <div th:replace="/enterprise/global :: #header"></div>
+  <div th:replace="/enterprise/global :: #navbar"></div>
+  <div class="center">
+    <div class="list_a">
+      <a th:href="@{/enterprise/index}"> 首页 </a>&gt;
+      <a th:href="@{/enterprise/qua/productlist?c=001004}">产品资质</a>
+    </div>
+    <div class="list_b">
+      <div id="productquadetail">
+        <input type="hidden" ref="quaCodeInput" th:value="${quaCode}">
+        <input type="hidden" ref="urlInput" th:value="${serverUrl}">
+        <template>
+          <el-row style="margin-bottom: 10px;margin-top: 10px">
+            <el-col>
+              <el-tag type="info" th:text="${quaName}"></el-tag>
+              <el-button type="primary" icon="el-icon-back" @click="onback">返回</el-button>
+            </el-col>
+          </el-row>
+          <el-row style="margin-bottom: 10px;margin-top: 10px">
+            <el-col :span="24" class="list_w">
+              <el-table
+                :data="this.tableData"
+                height="400px"
+                max-height="400px"
+                size="small"
+                style="width: 100%"
+                row-class-name="row"
+                cell-class-name="column"
+                :highlight-current-row="true"
+                fit
+              >
+                <el-table-column
+                  type="index"
+                  :index="typeIndex"
+                  label="序号"
+                  width="50"
+                ></el-table-column>
+                <el-table-column
+                  v-for="(item, index) in tableLabel"
+                  :key="index"
+                  :prop="item.prop"
+                  :width="item.width"
+                  :label="item.label"
+                >
+                  <template scope="scope">
+                    <span v-if="scope.row.validState=1" style="color:red">{{ scope.row[item.prop] }}</span>
+                    <span v-else>{{ scope.row[item.prop] }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="资质图片">
+                  <template slot-scope="scope">
+                    <el-button
+                      type="primary"
+                      icon="el-icon-search"
+                      @click="handleSearchQuaImage(scope.row)"
+                    ></el-button>
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" width="350">
+                  <template slot-scope="scope">
+                    <el-button type="primary" icon="el-icon-edit"
+                               @click="handleEditProductQua(scope.row)"></el-button>
+                    <el-button type="primary" icon="el-icon-delete"
+                               @click="handleDeleteProductQua(scope.row.id)"></el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col>
+              <el-pagination
+                v-bind:current-page="pageInfo.current"
+                v-bind:page-size="pageInfo.size"
+                :total="pageInfo.total"
+                layout="total,sizes,prev,pager,next,jumper"
+                v-bind:page-sizes="[10, 50, 100]"
+                v-on:size-change="changePageSize"
+                v-on:current-change="pageIndexChange"
+              ></el-pagination>
+            </el-col>
+          </el-row>
+          <edit-product-qua-component :dialog-title="dialogTitle"
+                                      :show-dialog.sync="showDialog"
+                                      :form-data="currentData"
+                                      :form-imgs="imgs">
+          </edit-product-qua-component>
+          <watch-qua-image-component :image-dialog-title="imageDialogTitle"
+                                     :image-show-dialog.sync="imageShowDialog"
+                                     :imgs="imgs">
+          </watch-qua-image-component>
+        </template>
+      </div>
+    </div>
+  </div>
+  <div th:replace="/enterprise/fragments/footer :: #footer">&copy; 2017 The Static Templates</div>
+</div>
+<style>
+  .el-table .warning-row {
+    background: #E6A23C;
+  }
+
+  .el-table .success-row {
+    background: #f0f9eb;
+  }
+</style>
+<script type="text/javascript" th:src="@{/lib/vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/lib/element-ui/lib/index.js}"></script>
+<script type="text/javascript" th:src="@{/lib/vue/vuex.js}"></script>
+<script type="text/javascript" th:src="@{/lib/viewer/viewer.js}"></script>
+<script type="text/javascript" th:src="@{/lib/viewer/v-viewer.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/moment/moment.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/axios/dist/axios.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
+
+<script type="x-template" id="watch-qua-image-template">
+  <div class="content">
+    <el-dialog
+      :center="true"
+      :title="imageDialogTitle"
+      :close-on-click-modal="false"
+      :modal="false"
+      :visible="imageShowDialog"
+      @close="tallDataListChanged"
+    >
+      <div class="content">
+        <viewer :images="imgs">
+          <el-row>
+            <div class="block">
+              <img
+                width="200px"
+                height="200px"
+                v-for="src in imgs"
+                :src="src.url"
+                :key="src.title"
+              />
+              <div>点击查看大图</div>
+            </div>
+          </el-row>
+        </viewer>
+      </div>
+    </el-dialog>
+  </div>
+</script>
+
+<script type="x-template" id="edit-product-qua-template">
+  <div>
+    <el-dialog
+      width="40%"
+      :title="dialogTitle"
+      :close-on-click-modal="false"
+      :visible="showDialog"
+      @close="tallDataListChanged"
+    >
+      <el-form label-width="120px" ref="dynamicValidateForm" :model="currentData">
+        <el-form-item label="医院是否可见" prop="isShow" :rules="{ required: true, message: '请选择医院是否可见', trigger: 'change' }">
+          <el-select v-model="currentData.isShow" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item :key="domain.prop"
+                      :label="domain.label"
+                      :prop="domain.prop"
+                      :rules="{required: true, message: domain.label+'不能为空', trigger: 'blur'}"
+                      v-for="domain in dynamicValidateForm.domains">
+          <div v-if="(domain.type=='text')">
+            <el-input type="text" style="width:240px"
+                      autocomplete="off"
+                      v-model="currentData[domain.prop]"/>
+          </div>
+          <div>
+            <el-date-picker
+              v-model="currentData[domain.prop]" style="width:240px"
+              type="date"
+              v-if="(domain.type=='date')"
+            >
+            </el-date-picker>
+          </div>
+        </el-form-item>
+        <el-form-item label="上传">
+          <el-upload
+            class="upload-demo"
+            ref="elUpload"
+            accept="image/jpeg,image/gif,image/png"
+            :multiple="false"
+            :before-upload="handleBeforeUpload"
+            :on-exceed="handleExceed"
+            :on-preview="handlePreview"
+            :before-remove="beforeRemove"
+            :on-remove="afterRemove"
+            :on-success="handleSuccess"
+            :action="handelUploadUrl()"
+            :file-list="imgs"
+            list-type="picture"
+            :limit="5"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">
+              只能上传jpg/png/jpeg，且不超过5M
+            </div>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleEditProductQua">保存</el-button>
+        <el-button @click="tallDataListChanged">关闭</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</script>
+<script type="text/javascript" th:src="@{/enterprise/js/qua/productquadetail.js}"></script>
+</body>
+</html>
+

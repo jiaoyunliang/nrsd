@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzOrgInfoMapper">
+    <resultMap id="BaseResultMap" type="com.rsd.domain.RsdOrgInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="ID" jdbcType="DECIMAL" property="id"/>
+        <result column="ORG_NAME" jdbcType="VARCHAR" property="orgName"/>
+        <result column="ORG_LEVEL" jdbcType="DECIMAL" property="orgLevel"/>
+        <result column="JOIN_DATE" jdbcType="DATE" property="joinDate"/>
+        <result column="EXPIRE_DATE" jdbcType="DATE" property="expireDate"/>
+        <result column="IS_DEL" jdbcType="DECIMAL" property="isDel"/>
+        <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser"/>
+        <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime"/>
+        <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser"/>
+        <result column="CREATE_TIME" jdbcType="DATE" property="createTime"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="STATE" jdbcType="DECIMAL" property="state"/>
+        <result column="SYS_ID" jdbcType="DECIMAL" property="sysId"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="area" jdbcType="VARCHAR" property="area"/>
+        <result column="contact" jdbcType="VARCHAR" property="contact"/>
+        <result column="state" jdbcType="DECIMAL" property="state"/>
+        <result column="ENTERPRISE_TYPE" jdbcType="DECIMAL" property="enterpriseType"/>
+    </resultMap>
+
+    <sql id="is_del">and is_del=0</sql>
+
+    <sql id="baseSql">id, org_name, org_level, join_date, expire_date, is_del, update_user, update_time,
+                      create_user, create_time, remark, sys_id, email, mobile, area, contact</sql>
+
+    <select id="queryOrgList" resultType="com.rsd.domain.RsdOrgInfo">
+        SELECT * from BNZ_ORG_INFO t where 1=1
+        <if test="model.orgName != null and model.orgName != ''">
+            and t.ORG_NAME LIKE '%'||#{model.orgName}||'%'
+        </if>
+        <if test="model.sysId != null">
+            and t.sys_id=#{model.sysId}
+        </if>
+        <include refid="is_del"></include>
+        ORDER BY t.id
+    </select>
+
+    <select id="get" resultMap="BaseResultMap">
+        select
+        <include refid="baseSql"></include>
+        from BNZ_ORG_INFO
+        where id = #{id}
+        <include refid="is_del"></include>
+    </select>
+
+
+    <select id="getId" resultType="Long">
+        select BNZ_ORG_INFO_SEQ.nextval from dual
+    </select>
+
+
+    <select id="queryOrgPage" resultType="com.rsd.domain.RsdOrgInfoModel">
+        SELECT
+        t.*,
+        r.name AS role_name
+        from BNZ_ORG_INFO t, BNZ_ROLE r
+        where t.ORG_LEVEL = r.ID and t.is_del=0
+            and t.sys_id=#{model.sysId}
+        <if test="model.orgName != null and model.orgName != ''">
+            and t.ORG_NAME LIKE '%'||#{model.orgName}||'%'
+        </if>
+        ORDER BY t.create_time desc
+    </select>
+
+    
+    <select id="queryEnterpriseList" resultType="com.rsd.domain.RsdOrgInfoModel">
+        SELECT
+            t.*
+        FROM
+            BNZ_ORG_INFO t
+        WHERE
+            t.sys_id = 3
+            AND t.is_del = 0
+            AND t.state = 0
+        <if test="model.enterpriseType != null">
+            and t.ENTERPRISE_TYPE = #{model.enterpriseType}
+        </if>
+            ORDER BY dbms_random.value()
+    </select>
+
+</mapper>

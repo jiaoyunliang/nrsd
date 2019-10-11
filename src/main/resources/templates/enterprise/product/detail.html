@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:include="/enterprise/global :: #common"></head>
+<body>
+<div class="hsptAll">
+    <div th:replace="/enterprise/global :: #header"></div>
+    <div th:replace="/enterprise/global :: #navbar"></div>
+    <div class="center" th:attr="pid=${product.id}" id="product">
+        <div class="list_a">
+            <a th:href="@{/enterprise/index}"> 首页 </a>&gt;
+            <a th:href="@{/enterprise/product/list?c=001001}">产品管理</a>
+        </div>
+        <div class="hspt_k">
+            <div class="hspt_k_1">
+                <div class="hspt_k_1_1">
+                    <img th:each="pic,picStat : ${product.picList}" th:if="${picStat.count}==1" th:src="${fileServer}+${pic.fileUrl}"/>
+                </div>
+                <ol>
+                    <li th:each="pic,stat : ${product.picList}">
+                        <img th:if="${stat.count}==1" class="hover" th:src="${fileServer}+${pic.fileUrl}">
+                        <img th:if="${stat.count}>1"th:src="${fileServer}+${pic.fileUrl}">
+                    </li>
+                </ol>
+            </div>
+            <div class="hspt_k_2">
+                <h1 th:text="${product.productName}"></h1>
+                <p th:text="${product.genericName}"></p>
+                <div class="hspt_k_2_1">
+                    <div class="hspt_k_2_1_1">
+                        品牌：<span th:text="${product.brandName}"/><br>
+                        厂家：<span th:text="${product.manufacturer}"/>
+                    </div>
+                </div>
+                <div class="hspt_k_2_2">
+                    <video
+                            th:if="${product.video!=null}"
+                            th:src="${fileServer}+${product.video.fileUrl}"
+                            controls="controls"
+                            width="320px"
+                            height="240px"
+                    >
+                        your browser does not support the video tag
+                    </video>
+                    <img th:if="${product.video==null}" src="../images/23333.jpg">
+                </div>
+            </div>
+        </div>
+        <div class="hspt_m">
+            <div class="hspt_m_1">
+                <ul>
+                    <li class="hover">产品介绍</li><li class="">规格价格</li>
+                </ul>
+            </div>
+            <div class="hspt_m_2" style="display: block;">
+                <p th:utext="${product.remark}"></p>
+            </div>
+            <div class="hspt_m_2" style="display: none;">
+                <table style="text-align: center;width: 80%;border: 1px solid #E1E1E1;">
+                    <tr>
+                        <th>规格</th>
+                        <th>价格</th>
+                        <th>数量</th>
+                    </tr>
+                    <tr th:each="item,stat : ${product.priceList}">
+                        <td th:text="${item.spec}"></td>
+                        <td th:text="${item.price}"></td>
+                        <td th:text="${item.amount}"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div th:replace="/enterprise/global :: #footer"></div>
+</div>
+
+
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function(){
+    });
+
+    $(function(){
+        $(".hspt_m_1 ul li").click(function(){
+            var num = $(this).index();
+            $(this).addClass("hover").siblings().removeClass("hover");
+            $(".hspt_m_2").hide().eq(num).show();
+
+        });
+
+
+        $(".hspt_k_1 ol li").click(function(){
+            $(this).addClass("hover").siblings().removeClass("hover");
+            $(".hspt_k_1_1").html($(this).find("img").clone());
+        });
+
+    })
+    /*]]>*/
+</script>
+<style>
+</style>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN"
+      xmlns:th="http://www.thymeleaf.org"
+>
+
+<head th:include="/hospital/fragments/common :: #common"></head>
+<body>
+<div class="hsptAll">
+  <div th:replace="/hospital/global :: #header"></div>
+  <div th:replace="/hospital/global :: #navbar"></div>
+  <div class="center">
+    <div class="list_a">
+      <a th:href="@{/hospital/index}"> 首页 </a>&gt;
+      <a th:href="@{/hospital/project/list?c=001004}">数据查询</a>
+    </div>
+    <div class="list_b">
+      <div id="app">
+        <template>
+          <input type="hidden" ref="projectIdInput" th:value="${projectId}">
+          <el-row>
+            <el-col :span="24" class="list_w">
+              <el-table :data="tableData" v-loading="loading">
+                <el-table-column
+                  v-for="col in cols"
+                  :key="col.prop"
+                  :prop="col.prop"
+                  :label="col.label"
+                  :width="flexColumnWidth(col)"
+                  :show-overflow-tooltip="true"
+                >
+                </el-table-column>
+              </el-table>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col>
+              <el-pagination
+                v-bind:current-page="pageInfo.current"
+                v-bind:page-size="pageInfo.size"
+                :total="pageInfo.total"
+                layout="total,sizes,prev,pager,next,jumper"
+                v-bind:page-sizes="[10, 50, 100]"
+                v-on:size-change="changePageSize"
+                v-on:current-change="pageIndexChange"
+              ></el-pagination>
+            </el-col>
+          </el-row>
+        </template>
+      </div>
+    </div>
+  </div>
+  <div th:replace="/hospital/fragments/footer :: #footer">&copy; 2017 The Static Templates</div>
+</div>
+<script type="text/javascript" th:src="@{/lib/vue/vue.js}"></script>
+<script type="text/javascript" th:src="@{/lib/element-ui/lib/index.js}"></script>
+<script type="text/javascript" th:src="@{/lib/vue/vuex.js}"></script>
+<script type="text/javascript" th:src="@{/lib/moment/moment.min.js}"></script>
+<script type="text/javascript" th:src="@{/lib/axios/dist/axios.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
+<script type="text/javascript" th:src="@{/hospital/js/project/biddetail.js}"></script>
+</body>
+</html>
+

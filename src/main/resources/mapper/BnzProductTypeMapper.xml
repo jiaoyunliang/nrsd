@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzProductTypeMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzProductType">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="GROUP_ID" jdbcType="DECIMAL" property="groupId" />
+    <result column="SEQ" jdbcType="DECIMAL" property="seq" />
+    <result column="CLICK_NUM" jdbcType="DECIMAL" property="clickNum" />
+    <result column="IS_DEL" jdbcType="DECIMAL" property="isDel" />
+    <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser" />
+    <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime" />
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+    <result column="CREATE_TIME" jdbcType="DATE" property="createTime" />
+  </resultMap>
+
+  <select id="getId" resultType="Long">
+    select BNZ_PRODUCT_TYPE_SEQ.nextval from dual
+   </select>
+
+  <select id="queryProductType" resultType="com.rsd.domain.BnzProductTypeModel">
+    SELECT
+        t.*,
+        DICT_NAME AS group_name
+    FROM
+        BNZ_PRODUCT_TYPE t,
+        BNZ_DICT_INFO d
+    WHERE
+        t.GROUP_ID = d.DICT_ID
+        AND d.DICT_CATEGORY_ID = 9
+    ORDER BY
+        d.DICT_ID,
+        t.seq
+  </select>
+
+  <select id="queryOrgTypes" resultType="com.rsd.domain.BnzProductType">
+    SELECT
+        t.*
+    FROM
+        BNZ_PRODUCT_TYPE t,
+        BNZ_ORG_TYPES o
+    WHERE
+        t.ID = o.TYPE_ID
+        AND o.ORG_ID = #{orgId}
+    ORDER BY
+        t.GROUP_ID,
+        t.seq
+  </select>
+    
+    <update id="updateProductTypeClickNum">
+        UPDATE BNZ_PRODUCT_TYPE
+        SET CLICK_NUM = CLICK_NUM + 1
+        WHERE
+            id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzMsgReplyMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzMsgReply">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="MSG_ID" jdbcType="DECIMAL" property="msgId" />
+    <result column="ORG_ID" jdbcType="DECIMAL" property="orgId" />
+    <result column="REPLY_TIME" jdbcType="DATE" property="replyTime" />
+    <result column="REPLY_USER" jdbcType="VARCHAR" property="replyUser" />
+    <result column="REPLY_CONTENT" jdbcType="CLOB" property="replyContent" />
+  </resultMap>
+
+  <select id="getId" resultType="Long">
+    select BNZ_MSG_REPLY_SEQ.nextval from dual
+  </select>
+
+  <select id="queryMsgReplyByMsgId" resultType="com.rsd.domain.BnzMsgReplyModel">
+    SELECT
+        t.*,
+        t1.org_name
+    FROM
+        BNZ_MSG_REPLY t,
+        BNZ_ORG_INFO t1
+    WHERE
+        t.ORG_ID = t1.ID
+        AND t.MSG_ID = #{model.msgId}
+        and t.REPLY_TIME is not null
+    ORDER BY
+        t.REPLY_TIME DESC
+  </select>
+
+
+  <select id="queryMsgReply" resultType="com.rsd.domain.BnzMsgReplyModel">
+    SELECT
+        t.*,
+        t1.org_name
+    FROM
+        BNZ_MSG_REPLY t,
+        BNZ_ORG_INFO t1
+    WHERE
+        t.ORG_ID = t1.ID
+        AND t.MSG_ID = #{model.msgId}
+        and t.org_id = #{model.orgId}
+  </select>
+</mapper>

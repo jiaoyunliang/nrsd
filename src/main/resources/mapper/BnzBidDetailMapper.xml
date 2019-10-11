@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzBidDetailMapper">
+
+  <sql id="baseSql">
+    id, project_id, bid_number, bid_org_name, bid_user_name, zt_item_id, maintain_org_name,
+    produce_org_name, zt_item_name, project_category_id, project_category_name, project_catalogue_id,
+    project_catalogue_name, zt_item_spec, zt_item_model, zt_register_id, zt_register_spec,
+    zt_register_model, zt_item_brand, zt_item_min_number_unit, zt_item_pack_spec,
+    zt_item_pack_material, zt_item_performace, zt_item_scope, zt_data_check_state,
+    zt_catalogue_check_state, item_id, item_name, item_spec, item_model, item_register_id,
+    item_register_spec, item_register_model, item_register_valid_date, item_brand,
+    item_min_number_unit, item_min_pack_unit, item_conversion_ratio, item_pack_spec,
+    item_pack_material, item_performance, item_scope, compose_number, item_check_state,
+    item_check_person, item_base_price, item_quote, is_del, update_user, update_time, create_user, create_time
+  </sql>
+  <sql id="is_del">and is_del=0</sql>
+
+  <update id="deleteBidDetail" parameterType="com.rsd.domain.BnzBidDetail">
+    update bnz_bid_detail set is_del = #{isDel} where project_id = #{projectId}
+  </update>
+
+  <insert id="insertList" parameterType="java.util.List" useGeneratedKeys="false">
+    insert into bnz_bid_detail
+    (id, project_id, bid_number, bid_org_name, bid_user_name,
+    zt_item_id, maintain_org_name, produce_org_name,
+    zt_item_name, project_category_id,
+    project_category_name, project_catalogue_id,
+    project_catalogue_name, zt_item_spec,
+    zt_item_model, zt_register_id, zt_register_spec,
+    zt_register_model, zt_item_brand, zt_item_min_number_unit,
+    zt_item_pack_spec, zt_item_pack_material, zt_item_performace,
+    zt_item_scope, zt_data_check_state, zt_catalogue_check_state,
+    item_id, item_name, item_spec, item_model, item_register_id,
+    item_register_spec, item_register_model, item_register_valid_date,
+    item_brand, item_min_number_unit, item_min_pack_unit,
+    item_conversion_ratio, item_pack_spec, item_pack_material,
+    item_performance, item_scope, compose_number, item_check_state,
+    item_check_person, item_base_price, item_quote, is_del,
+    update_user, update_time, create_user, create_time)
+
+    select bnz_bid_detail_sequence.nextval,cd.* from(
+    <foreach collection="list" item="model"
+             separator="union all">
+      select
+      #{model.projectId}, #{model.bidNumber},
+      #{model.bidOrgName}, #{model.bidUserName}, #{model.ztItemId,jdbcType=VARCHAR},
+      #{model.maintainOrgName,jdbcType=VARCHAR}, #{model.produceOrgName,jdbcType=VARCHAR}, #{model.ztItemName,jdbcType=VARCHAR},
+      #{model.projectCategoryId,jdbcType=VARCHAR}, #{model.projectCategoryName,jdbcType=VARCHAR},
+      #{model.projectCatalogueId,jdbcType=VARCHAR}, #{model.projectCatalogueName,jdbcType=VARCHAR},
+      #{model.ztItemSpec,jdbcType=VARCHAR}, #{model.ztItemModel,jdbcType=VARCHAR}, #{model.ztRegisterId,jdbcType=VARCHAR},
+      #{model.ztRegisterSpec,jdbcType=VARCHAR}, #{model.ztRegisterModel,jdbcType=VARCHAR}, #{model.ztItemBrand,jdbcType=VARCHAR},
+      #{model.ztItemMinNumberUnit,jdbcType=VARCHAR}, #{model.ztItemPackSpec,jdbcType=VARCHAR}, #{model.ztItemPackMaterial,jdbcType=VARCHAR},
+      #{model.ztItemPerformace,jdbcType=VARCHAR}, #{model.ztItemScope,jdbcType=VARCHAR}, #{model.ztDataCheckState,jdbcType=VARCHAR},
+      #{model.ztCatalogueCheckState,jdbcType=VARCHAR}, #{model.itemId,jdbcType=VARCHAR}, #{model.itemName,jdbcType=VARCHAR},
+      #{model.itemSpec,jdbcType=VARCHAR}, #{model.itemModel,jdbcType=VARCHAR}, #{model.itemRegisterId,jdbcType=VARCHAR},
+      #{model.itemRegisterSpec,jdbcType=VARCHAR}, #{model.itemRegisterModel,jdbcType=VARCHAR}, #{model.itemRegisterValidDate,jdbcType=VARCHAR},
+      #{model.itemBrand,jdbcType=VARCHAR}, #{model.itemMinNumberUnit,jdbcType=VARCHAR}, #{model.itemMinPackUnit,jdbcType=VARCHAR},
+      #{model.itemConversionRatio,jdbcType=VARCHAR}, #{model.itemPackSpec,jdbcType=VARCHAR}, #{model.itemPackMaterial,jdbcType=VARCHAR},
+      #{model.itemPerformance,jdbcType=VARCHAR}, #{model.itemScope,jdbcType=VARCHAR}, #{model.composeNumber,jdbcType=VARCHAR},
+      #{model.itemCheckState,jdbcType=VARCHAR}, #{model.itemCheckPerson,jdbcType=VARCHAR}, #{model.itemBasePrice,jdbcType=VARCHAR},
+      #{model.itemQuote,jdbcType=VARCHAR}, #{model.isDel,jdbcType=DECIMAL}, #{model.updateUser,jdbcType=VARCHAR},
+      #{model.updateTime,jdbcType=DATE}, #{model.createUser,jdbcType=VARCHAR}, sysdate
+      from dual
+    </foreach>
+    ) cd
+  </insert>
+
+  <select id="queryList" resultType="com.rsd.domain.BnzBidDetail">
+    SELECT
+    t.*
+    FROM
+    bnz_bid_detail t
+    WHERE
+    t.is_del = 0
+    AND t.project_id = #{model.projectId}
+  </select>
+</mapper>

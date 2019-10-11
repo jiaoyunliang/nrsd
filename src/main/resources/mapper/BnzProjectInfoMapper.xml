@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzProjectInfoMapper">
+  <resultMap id="projectInfoResult" type="com.rsd.domain.BnzProjectInfoModel">
+    <id column="ID" property="id"/>
+    <result column="ORG_ID" property="orgId"/>
+    <result column="PROJECT_NAME" property="projectName"/>
+    <result column="PROJECT_TIME" property="projectTime"/>
+    <result column="PROJECT_TYPE" property="projectType"/>
+    <result column="IS_DEL" property="isDel"/>
+    <result column="UPDATE_USER" property="updateUser"/>
+    <result column="UPDATE_TIME" property="updateTime"/>
+    <result column="CREATE_USER" property="createUser"/>
+    <result column="CREATE_TIME" property="createTime"/>
+    <association property="rsdOrgInfo" column="org_id" fetchType="eager"
+                 select="com.rsd.mapper.BnzOrgInfoMapper.get">
+    </association>
+  </resultMap>
+  <sql id="is_del">and is_del=0</sql>
+  <sql id="baseSql">id, org_id, project_name, project_time, project_type, is_del, update_user, update_time, create_user,
+        create_time</sql>
+  <select id="searchProjectInfoList" resultMap="projectInfoResult">
+    select <include refid="baseSql"></include> from bnz_project_info
+    <where>
+      <if test="projectInfo.projectType != null and projectInfo.projectType != ''">
+        and project_type=#{projectInfo.projectType}
+      </if>
+      <if test="projectInfo.projectName!= null and projectInfo.projectName!=''">
+        and project_name like '%'||#{projectInfo.projectName}||'%'
+      </if>
+      <if test="projectInfo.orgId!=null and projectInfo.orgId!=''">
+        and org_id=#{projectInfo.orgId}
+      </if>
+      <include refid="is_del"></include>
+    </where>
+    ORDER BY CREATE_TIME desc
+  </select>
+
+  <insert id="addProjectInfo" keyProperty="id" useGeneratedKeys="false">
+    <selectKey resultType="Long" keyProperty="projectInfo.id" order="BEFORE">
+      select BNZ_PROJECT_INFO_SEQUENCE.nextval as id from dual
+    </selectKey>
+    insert into bnz_project_info(id,org_id,project_name, project_time,project_type,is_del,
+    create_user, create_time)
+    values(#{projectInfo.id},
+    #{projectInfo.orgId},
+    #{projectInfo.projectName,jdbcType=VARCHAR},
+    #{projectInfo.projectTime,jdbcType=DATE},
+    #{projectInfo.projectType},
+    #{projectInfo.isDel},
+    #{projectInfo.createUser},sysdate)
+  </insert>
+  <update id="deleteProjectInfo">
+    update bnz_project_info
+    set is_del
+                   = '1',
+        update_user=#{projectInfo.updateUser},
+        update_time=sysdate
+    where id = #{projectInfo.id}
+  </update>
+</mapper>

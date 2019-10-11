@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rsd.mapper.BnzFeedbackMapper">
+  <resultMap id="BaseResultMap" type="com.rsd.domain.BnzFeedback">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="SYS_ID" jdbcType="DECIMAL" property="sysId" />
+    <result column="ORG_ID" jdbcType="DECIMAL" property="orgId" />
+    <result column="ACCOUNT_ID" jdbcType="DECIMAL" property="accountId" />
+    <result column="IS_READ" jdbcType="DECIMAL" property="isRead" />
+    <result column="IS_DEL" jdbcType="DECIMAL" property="isDel" />
+    <result column="UPDATE_USER" jdbcType="VARCHAR" property="updateUser" />
+    <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime" />
+    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+    <result column="CREATE_TIME" jdbcType="DATE" property="createTime" />
+    <result column="CONTENT" jdbcType="CLOB" property="content" />
+  </resultMap>
+
+  <select id="getId" resultType="Long">
+    select BNZ_FEEDBACK_SEQ.nextval from dual
+  </select>
+
+  <select id="queryFeedbackList" resultType="com.rsd.domain.BnzFeedbackModel">
+    SELECT
+        t.*,
+        t1.ORG_NAME
+    FROM
+        BNZ_FEEDBACK t,
+        BNZ_ORG_INFO t1
+    WHERE
+        t.IS_DEL = 0
+        AND t.ORG_ID = t1.id
+        AND t.SYS_ID = #{model.sysId}
+      <if test="model.orgName != null and model.orgName != ''" >
+        AND t1.ORG_NAME LIKE '%'||#{model.orgName}||'%'
+      </if>
+    ORDER BY
+        t.IS_READ ASC,
+        t.CREATE_TIME DESC
+  </select>
+</mapper>
