@@ -1,7 +1,7 @@
 package com.rsd.api;
 
-import com.rsd.domain.RsdAccountModel;
 import com.rsd.domain.BnzFileRelation;
+import com.rsd.domain.RsdAccountModel;
 import com.rsd.service.BnzFileRelationService;
 import com.rsd.utils.Const;
 import com.rsd.utils.JsonOut;
